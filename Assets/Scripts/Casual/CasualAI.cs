@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CasualAI : MonoBehaviour
 {
-    private UnityEngine.AI.NavMeshAgent agent;
+    private UnityEngine.AI.NavMeshAgent navMeshAgent;
 
     private Transform player;
 
@@ -28,7 +28,7 @@ public class CasualAI : MonoBehaviour
     {
         player = GameObject.Find("PlayerModel").transform;
         
-        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        navMeshAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         audioSource = GetComponent<AudioSource>();
         audioTimer = audioDelay;
 
@@ -76,6 +76,13 @@ public class CasualAI : MonoBehaviour
         if(currentHealth == 0f){
             GetComponent<EnemyDeath>().dead = true;
         }
+
+        if(navMeshAgent.velocity.magnitude == 0){
+            GetComponent<Animator>().SetBool("isRunning", false);
+        }
+        else{
+            GetComponent<Animator>().SetBool("isRunning", true);
+        }
     }
 
     void OnTriggerEnter(Collider other){
@@ -98,7 +105,7 @@ public class CasualAI : MonoBehaviour
             nextRoamTime = Time.time + roamInterval;
         }
 
-        if (agent.remainingDistance <= agent.stoppingDistance)
+        if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
         {
             isRoaming = true;
         }
@@ -115,19 +122,19 @@ public class CasualAI : MonoBehaviour
         UnityEngine.AI.NavMeshHit hit;
         UnityEngine.AI.NavMesh.SamplePosition(randomDirection, out hit, roamRadius, 1);
         roamDestination = hit.position;
-        agent.SetDestination(roamDestination);
+        navMeshAgent.SetDestination(roamDestination);
     }
 
     void RunFromPlayer()
     {
         Vector3 runDirection = transform.position - player.position;
         Vector3 targetPosition = transform.position + runDirection.normalized * runDistance;
-        agent.SetDestination(targetPosition);
+        navMeshAgent.SetDestination(targetPosition);
     }
 
     void PlayRandomAudio(AudioClip[] clips)
     {
-        if (clips.Length > 0 && audioSource != null && !audioSource.isPlaying)
+        if (clips.Length > 0 && audioSource != null && !audioSource.isPlaying && !GetComponent<EnemyDeath>().dead)
         {
             int randomIndex = Random.Range(0, clips.Length);
             audioSource.clip = clips[randomIndex];

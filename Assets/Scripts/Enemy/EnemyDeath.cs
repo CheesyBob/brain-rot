@@ -15,6 +15,7 @@ public class EnemyDeath : MonoBehaviour
     public bool dead = false;
     private bool deathAudioPlay = false;
     private bool hasCheckedRevive = false;
+    public bool casual;
 
     public AudioClip[] deathAudioClips;
     private AudioSource audioSource;
@@ -51,7 +52,9 @@ public class EnemyDeath : MonoBehaviour
 
         navMeshAgent.isStopped = true;
 
-        GetComponent<EnemyAI>().canShoot = false;
+        if(!casual){
+            GetComponent<EnemyAI>().canShoot = false;
+        }
 
         ExecutionSkull.GetComponent<Canvas>().enabled = false;
     }

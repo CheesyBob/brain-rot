@@ -33921,7 +33921,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionSound: {fileID: 8300000, guid: b6a71163b01791d4aadb26db3420da78, type: 3}
   playerHitSounds:
-  - {fileID: 8300000, guid: d8652a87384e7de4099818ba2e816edc, type: 3}
+  - {fileID: 8300000, guid: ff80690eabda9294fb71e28398c249da, type: 3}
   radius: 4
   damageAmount: 40
 --- !u!54 &5545662070552832318

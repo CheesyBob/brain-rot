@@ -58,7 +58,7 @@ public class ShotgunShoot : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButton("Fire1") && Time.time >= nextFireTime){
+        if (Input.GetButton("Fire1") && Time.time >= nextFireTime && GameObject.Find("LoadingScreenCanvas").GetComponent<DestroyLoadingScreen>().canShoot){
             Shoot();
 
             nextFireTime = Time.time + fireRate;

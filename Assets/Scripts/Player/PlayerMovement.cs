@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     public float gravity = 9.81f;
 
     public bool enableMovement = true;
+    public bool playerMoving = false;
 
     void Start()
     {
@@ -50,7 +51,9 @@ public class PlayerMovement : MonoBehaviour
 
             if(movement.magnitude > mouseDeadZone)
             {
-                characterController.Move(movement * moveSpeed * Time.deltaTime);
+                characterController.Move(movement * moveSpeed * Time.deltaTime); 
+
+                playerMoving = true;
 
                 playerAnimator.SetBool("isRunning", true);
 
@@ -99,6 +102,8 @@ public class PlayerMovement : MonoBehaviour
             //Stopping all of the players running animations when idle
 
             else{
+                playerMoving = false;
+                
                 playerAnimator.SetBool("isRunning", false);
                 playerAnimator.SetBool("isPistolRunning", false);
                 playerAnimator.SetBool("isShotgunRunning", false);

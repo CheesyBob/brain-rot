@@ -31,7 +31,7 @@ public class RocketLauncherShoot : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && ableToShoot)
+        if (Input.GetMouseButtonDown(0) && ableToShoot && GameObject.Find("LoadingScreenCanvas").GetComponent<DestroyLoadingScreen>().canShoot)
         {
             SpawnNewObject();
         }
