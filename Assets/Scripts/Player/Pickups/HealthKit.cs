@@ -6,6 +6,7 @@ using TMPro;
 public class HealthKit : MonoBehaviour
 {
     private TextMeshProUGUI healthText;
+    
     public int healthAmount;
     public int maxHealth;
 
@@ -20,9 +21,23 @@ public class HealthKit : MonoBehaviour
 
     void OnTriggerEnter(Collider other){
         if(other.gameObject.tag == "PlayerModel"){
-            if(int.TryParse(healthText.text, out int currentHealth)){
-                int newHealth = currentHealth + healthAmount;
-                newHealth = Mathf.Clamp(newHealth, 0, maxHealth);
+            PlayerBurn playerBurn = other.GetComponent<PlayerBurn>();
+
+            if (playerBurn.isBurning){
+                playerBurn.StopBurnDamage();
+                playerBurn.playerFire.Stop();
+                
+                HealPlayer();
+            } else {
+                HealPlayer();
+            }
+        }
+    }
+
+    private void HealPlayer() {
+        if(int.TryParse(healthText.text, out int currentHealth)){
+            int newHealth = currentHealth + healthAmount;
+            newHealth = Mathf.Clamp(newHealth, 0, maxHealth);
 
             if(currentHealth == maxHealth){
                 audioSource.clip = maxHealthSound;
@@ -30,12 +45,11 @@ public class HealthKit : MonoBehaviour
                 return;
             }
 
-            if(currentHealth <= maxHealth){
+            if(currentHealth < maxHealth){
                 healthText.text = newHealth.ToString();
                 audioSource.clip = HealSound;
                 audioSource.Play();
                 Destroy(this.gameObject, 0.22f);
-                }
             }
         }
     }

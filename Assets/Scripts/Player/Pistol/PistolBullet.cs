@@ -8,6 +8,8 @@ public class PistolBullet : MonoBehaviour
 
     private AudioSource enemyAudioSource;
 
+    public float damageAmount;
+
     void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.tag == "Enemy"){

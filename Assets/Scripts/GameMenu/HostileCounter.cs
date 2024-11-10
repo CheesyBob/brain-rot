@@ -21,7 +21,7 @@ public class HostileCounter : MonoBehaviour
     }
 
     void Update(){
-        if(Player.GetComponent<HealthStatus>().death){
+        if(Player.GetComponent<HealthStatus>().dead){
             PlayerSubtractCount();
         }
         else{

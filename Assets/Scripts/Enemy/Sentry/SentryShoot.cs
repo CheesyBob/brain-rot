@@ -31,24 +31,36 @@ public class SentryShoot : MonoBehaviour
     
     public bool dead = false;
 
+    private LayerMask wallLayer;
+
+    public Transform[] sentryChildTransforms;
+
     void Start(){
         player = GameObject.Find("PlayerModel").transform;
         healthText = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
+        
+        wallLayer = LayerMask.GetMask("Wall");
     }
 
-    void Update(){
+    void Update()
+    {
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        if(distanceToPlayer <= detectRadius && !dead){
-            if(IsPlayerVisible()){
+        if(distanceToPlayer <= detectRadius && !dead)
+        {
+            if(CanSeePlayer())
+            {
                 Vector3 direction = player.position - sentryHead.position;
+
+                direction = Quaternion.Euler(0, 180, 0) * direction;
+
                 Quaternion rotation = Quaternion.LookRotation(direction);
 
                 sentryHead.rotation = Quaternion.Lerp(sentryHead.rotation, rotation, rotationSpeed * Time.deltaTime);
 
-                if(cooldownTimer <= 0f){
+                if(cooldownTimer <= 0f)
+                {
                     SpawnBullet();
-
                     cooldownTimer = cooldownDuration;
                 }
             }
@@ -56,35 +68,38 @@ public class SentryShoot : MonoBehaviour
 
         cooldownTimer -= Time.deltaTime;
 
-        if(sentryHealth <= 0 && !dead){
+        if(sentryHealth <= 0 && !dead)
+        {
             sentryHealth = 0;
-
             Explode();
         }
 
-        if(healthText.text == "0"){
+        if(healthText.text == "0")
+        {
             dead = true;
         }
     }
 
-    bool IsPlayerVisible(){
-        RaycastHit hit;
-        Vector3 directionToPlayer = player.position - sentryHead.position;
 
-        if (Physics.Raycast(sentryHead.position, directionToPlayer, out hit, detectRadius)){
-            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")){
+    bool CanSeePlayer(){
+        Vector3 directionToPlayer = (player.position - transform.position).normalized;
+
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, directionToPlayer, out hit, distanceToPlayer, wallLayer)){
+            if (hit.collider.CompareTag("Wall")){
                 return false;
             }
-            if (hit.collider.gameObject == player.gameObject){
-                return true;
-            }
         }
-        return false;
+
+        return true;
     }
 
     void SpawnBullet(){
         GameObject bulletInstance = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity);
-        bulletInstance.GetComponent<Rigidbody>().linearVelocity = (player.position - bulletSpawnPoint.position).normalized * bulletSpeed;
+        bulletInstance.GetComponent<Rigidbody>().velocity = (player.position - bulletSpawnPoint.position).normalized * bulletSpeed;
 
         PlayRandomShootSound(sentryShoot);
     }
@@ -96,24 +111,26 @@ public class SentryShoot : MonoBehaviour
             explosion.Play();
 
             GetComponent<AudioSource>().PlayOneShot(sentryExplode);
+            GetComponent<BoxCollider>().enabled = false;
 
-            sentryHead.GetComponent<Rigidbody>().isKinematic = false;
-            sentryHead.GetComponent<Rigidbody>().AddForce(Vector3.up * 10f, ForceMode.Impulse);
-            sentryHead.gameObject.layer = LayerMask.NameToLayer("SentryGib");
-
-            gameObject.layer = LayerMask.NameToLayer("SentryGib");
-
-            sentryHead.Rotate(Vector3.forward * 20f);
-
-            FindAllChildObjects(transform);
+            ApplyForceToChildren();
         }
     }
 
-    private void FindAllChildObjects(Transform parent){
-        foreach (Transform child in parent){
-            childObjects.Add(child.gameObject);
-            child.gameObject.layer = LayerMask.NameToLayer("SentryGib");
-            FindAllChildObjects(child);
+    private void ApplyForceToChildren(){
+        foreach (Transform child in sentryChildTransforms){
+            Rigidbody rb = child.GetComponent<Rigidbody>();
+
+            rb.isKinematic = false;
+
+            Vector3 randomDirection = new Vector3(Random.Range(-1f, 1f), Random.Range(0.5f, 1f), Random.Range(-1f, 1f)).normalized;
+            rb.AddForce(randomDirection * 5f, ForceMode.Impulse);
+
+            float randomRotationX = Random.Range(0f, 40f);
+            float randomRotationY = Random.Range(0f, 40f);
+            float randomRotationZ = Random.Range(0f, 40f);
+
+            child.Rotate(randomRotationX, randomRotationY, randomRotationZ);
         }
     }
 

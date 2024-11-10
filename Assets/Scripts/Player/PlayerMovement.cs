@@ -4,163 +4,99 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public Camera mainCamera;
-
+    private Camera mainCamera;
     private CharacterController characterController;
-
-    private Vector3 lastMousePosition;
-
     private Animator playerAnimator;
 
     public float moveSpeed;
-    public float rotationSpeed;
-    private float maxRotationDistance;
-    private float mouseDeadZone;
     public float gravity = 9.81f;
 
     public bool enableMovement = true;
     public bool playerMoving = false;
 
+    public float burnMovementVariation; 
+    public float burnSpeedIncrease;
+
     void Start()
     {
         playerAnimator = GameObject.Find("Player").GetComponent<Animator>();
-
         characterController = GetComponent<CharacterController>();
         mainCamera = Camera.main;
     }
 
     void Update()
     {
-        if(enableMovement){
-            Vector3 mousePosition = Input.mousePosition;
-            mousePosition.z = Vector3.Distance(mainCamera.transform.position, transform.position);
-            Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
-
-            if (Vector3.Distance(transform.position, mouseWorldPosition) > maxRotationDistance)
-            {
-                Vector3 directionToMouse = mouseWorldPosition - transform.position;
-                directionToMouse.y = 0f;
-                Quaternion rotationToMouse = Quaternion.LookRotation(directionToMouse);
-                transform.rotation = Quaternion.Slerp(transform.rotation, rotationToMouse, rotationSpeed * Time.deltaTime);
-            }
-
-            float horizontalInput = Input.GetAxis("Horizontal");
-            float verticalInput = Input.GetAxis("Vertical");
-            
-            Vector3 movement = new Vector3(horizontalInput, 0f, verticalInput).normalized;
-
-            if(movement.magnitude > mouseDeadZone)
-            {
-                characterController.Move(movement * moveSpeed * Time.deltaTime); 
-
-                playerMoving = true;
-
-                playerAnimator.SetBool("isRunning", true);
-
-                //Checking if the pistol is equpied then play pistolrun
-
-                if(this.gameObject.GetComponent<WeaponEquipedStatus>().pistolEquiped){
-                    playerAnimator.SetBool("isPistolRunning", true);
-                }
-
-                else{
-                    playerAnimator.SetBool("isRunning", true);
-                }
-
-                //Checking if the shotgun is equpied then play shotgunrun
-
-                if(this.gameObject.GetComponent<WeaponEquipedStatus>().shotgunEquiped){
-                    playerAnimator.SetBool("isShotgunRunning", true);
-                }
-
-                else{
-                    playerAnimator.SetBool("isRunning", true);
-                }
-
-                //Checking if the rocketlauncher is equpied then play rocketlauncherrun
-
-                if(this.gameObject.GetComponent<WeaponEquipedStatus>().rocketLauncherEquiped){
-                    playerAnimator.SetBool("isRocketLauncherRunning", true);
-                }
-
-                else{
-                    playerAnimator.SetBool("isRunning", true);
-                }
-
-                
-                //Checking if the flamethrower is equpied then play flamethrowerun
-
-                if(this.gameObject.GetComponent<WeaponEquipedStatus>().flamethrowerEquiped){
-                    playerAnimator.SetBool("isFlamethroweruning", true);
-                }
-
-                else{
-                    playerAnimator.SetBool("isRunning", true);
-                }
-            }
-
-            //Stopping all of the players running animations when idle
-
-            else{
-                playerMoving = false;
-                
-                playerAnimator.SetBool("isRunning", false);
-                playerAnimator.SetBool("isPistolRunning", false);
-                playerAnimator.SetBool("isShotgunRunning", false);
-                playerAnimator.SetBool("isRocketLauncherRunning", false);
-                playerAnimator.SetBool("isFlamethroweruning", false);
-            }
-
-            //Checking if the pistol is equpied then play pistolidle
-
-            if(this.gameObject.GetComponent<WeaponEquipedStatus>().pistolEquiped){
-                playerAnimator.SetBool("pistolEquiped", true);
-                playerAnimator.SetBool("isRunning", false);
-            }
-
-            else{
-                playerAnimator.SetBool("pistolEquiped", false);
-                playerAnimator.SetBool("isPistolRunning", false);
-            }
-
-            //Checking if the shotgun is equpied then play shotgunidle
-
-            if(this.gameObject.GetComponent<WeaponEquipedStatus>().shotgunEquiped){
-                playerAnimator.SetBool("shotgunEquiped", true);
-                playerAnimator.SetBool("isRunning", false);
-            }
-
-            else{
-                playerAnimator.SetBool("shotgunEquiped", false);
-                playerAnimator.SetBool("isShotgunRunning", false);
-            }
-
-            //Checking if the rocketlauncher is equpied then play rocketlauncheridle
-
-            if(this.gameObject.GetComponent<WeaponEquipedStatus>().rocketLauncherEquiped){
-                playerAnimator.SetBool("rocketLauncherEquiped", true);
-                playerAnimator.SetBool("isRunning", false);
-            }
-
-            else{
-                playerAnimator.SetBool("rocketLauncherEquiped", false);
-                playerAnimator.SetBool("isRocketLauncherRunning", false);
-            }
-
-            //Checking if the flamethrower is equpied then play flamethroweridle
-
-            if(this.gameObject.GetComponent<WeaponEquipedStatus>().flamethrowerEquiped){
-                playerAnimator.SetBool("flamethrowerEquiped", true);
-                playerAnimator.SetBool("isRunning", false);
-            }
-
-            else{
-                playerAnimator.SetBool("flamethrowerEquiped", false);
-                playerAnimator.SetBool("isFlamethroweruning", false);
-            }
-
+        if (enableMovement)
+        {
+            HandleMovement();
+            HandleAnimations();
             ApplyGravity();
         }
+    }
+
+    void HandleMovement()
+    {
+        Vector3 mousePosition = Input.mousePosition;
+        mousePosition.z = Vector3.Distance(mainCamera.transform.position, transform.position);
+        Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
+
+        Vector3 directionToMouse = mouseWorldPosition - transform.position;
+        directionToMouse.y = 0f;
+
+        if (directionToMouse.magnitude > 0f)
+        {
+            Quaternion rotationToMouse = Quaternion.LookRotation(directionToMouse);
+            Quaternion offsetRotation = Quaternion.Euler(0f, -90f, 0f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotationToMouse * offsetRotation, 100f * Time.deltaTime);
+
+            transform.rotation = Quaternion.Euler(-90f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+        }
+
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+
+        Vector3 movement = new Vector3(horizontalInput, 0f, verticalInput).normalized;
+
+        if (GetComponent<PlayerBurn>().isBurning)
+        {
+            movement.x += Random.Range(-burnMovementVariation, burnMovementVariation);
+            movement.z += Random.Range(-burnMovementVariation, burnMovementVariation);
+            movement *= (1f + burnSpeedIncrease);
+        }
+
+        if (movement.magnitude > 0f)
+        {
+            characterController.Move(movement * moveSpeed * Time.deltaTime);
+            playerMoving = true;
+        }
+        else
+        {
+            playerMoving = false;
+        }
+    }
+
+    void HandleAnimations()
+    {
+        var weaponStatus = GetComponent<WeaponEquipedStatus>();
+
+        SetAnimatorBools("isRunning", playerMoving);
+        SetAnimatorBools("pistolRunning", weaponStatus.pistolEquiped && playerMoving);
+        SetAnimatorBools("shotgunRunning", weaponStatus.shotgunEquiped && playerMoving);
+        SetAnimatorBools("rocketlauncherRunning", weaponStatus.rocketLauncherEquiped && playerMoving);
+        SetAnimatorBools("deathwadRunning", weaponStatus.deathwadEquiped && playerMoving);
+        SetAnimatorBools("flamethrowerRunning", weaponStatus.flamethrowerEquiped && playerMoving);
+
+        SetAnimatorBools("pistolEquiped", weaponStatus.pistolEquiped);
+        SetAnimatorBools("shotgunEquiped", weaponStatus.shotgunEquiped);
+        SetAnimatorBools("rocketLauncherEquiped", weaponStatus.rocketLauncherEquiped);
+        SetAnimatorBools("deathwadEquiped", weaponStatus.deathwadEquiped);
+        SetAnimatorBools("flamethrowerEquiped", weaponStatus.flamethrowerEquiped);
+        SetAnimatorBools("isBurning", GetComponent<PlayerBurn>().isBurning);
+    }
+
+    void SetAnimatorBools(string parameter, bool value)
+    {
+        playerAnimator.SetBool(parameter, value);
     }
 
     void ApplyGravity()

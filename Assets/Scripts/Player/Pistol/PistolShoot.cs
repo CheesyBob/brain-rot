@@ -14,30 +14,21 @@ public class PistolShoot : MonoBehaviour
     public LineRenderer bulletLine;
 
     public LayerMask shootableLayer;
-    
-    public AudioClip pistolShootSound;
-
-    private AudioSource audioSource;
 
     public float fireRate;
     public float bulletSpeed;
     public float bulletDuration;
-    public float teleportDuration;
     public float lineDuration;
     private float nextFireTime;
 
-    public bool executeShoot = false;
-    public bool shot = false;
-
     public Vector3 distanceFromGun;
-    private Vector3 originalTeleportPosition;
 
     private void Start()
     {
         muzzleFlash.SetActive(false);
+
         bulletLine.enabled = false;
 
-        audioSource = this.gameObject.GetComponent<AudioSource>();
         mainCamera = DestroyClonedPlayer.Instance.playerCamera.GetComponent<Camera>();
     }
 
@@ -63,17 +54,12 @@ public class PistolShoot : MonoBehaviour
         
         endPoint.y = startPoint.y;
 
-        shot = true;
-
         StartCoroutine("PlayMuzzleFlash");
 
-        audioSource.clip = pistolShootSound;
-        audioSource.Play();
+        GetComponent<AudioSource>().Play();
 
-        if(!executeShoot){
-            DisplayLine(startPoint, endPoint);
-            ShootBullet(startPoint, endPoint);
-        }
+        DisplayLine(startPoint, endPoint);
+        ShootBullet(startPoint, endPoint);
     }
 
     IEnumerator PlayMuzzleFlash()
@@ -136,10 +122,9 @@ public class PistolShoot : MonoBehaviour
         Vector3 direction = (end - start).normalized;
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
-        rb.linearVelocity = direction * bulletSpeed;
+        rb.velocity = direction * bulletSpeed;
 
-        audioSource.clip = pistolShootSound;
-        audioSource.Play();
+        GetComponent<AudioSource>().Play();
 
         Ray ray = new Ray(start, direction);
 

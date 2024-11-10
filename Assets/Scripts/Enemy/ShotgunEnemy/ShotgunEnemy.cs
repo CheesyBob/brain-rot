@@ -65,7 +65,7 @@ public class ShotgunEnemy : MonoBehaviour
             GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.identity);
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
-            rb.linearVelocity = fireDirection * bulletSpeed;
+            rb.velocity = fireDirection * bulletSpeed;
             Destroy(bullet, 1f);
 
             audioSource.clip = ShootSound;

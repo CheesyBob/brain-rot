@@ -13,8 +13,5 @@ public class FlamethrowerFlames : MonoBehaviour
         if(other.CompareTag("Casual")){
             other.GetComponent<EnemyBurning>().enabled = true;
         }
-        if(other.CompareTag("Sentry")){
-            other.GetComponent<SentryShoot>().Explode();
-        }
     }
 }

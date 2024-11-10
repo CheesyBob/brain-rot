@@ -8,6 +8,7 @@ public class AmmoKit : MonoBehaviour
     private TextMeshProUGUI shotgunAmmoText;
     private TextMeshProUGUI rocketAmmoText;
     private TextMeshProUGUI flamethrowerText;
+    private TextMeshProUGUI molotovText;
 
     private AudioSource audioSource;
     public AudioClip AmmoSound;
@@ -19,11 +20,13 @@ public class AmmoKit : MonoBehaviour
     public bool shotgunKit;
     public bool rocketKit;
     public bool fuelCan;
+    public bool molotoves;
 
     void Start(){
         shotgunAmmoText = GameObject.Find("ShotgunAmmo").GetComponent<TextMeshProUGUI>();
         rocketAmmoText = GameObject.Find("RocketLauncherAmmo").GetComponent<TextMeshProUGUI>();
         flamethrowerText = GameObject.Find("FlamethrowerAmmo").GetComponent<TextMeshProUGUI>();
+        molotovText = GameObject.Find("MolotovAmount").GetComponent<TextMeshProUGUI>();
 
         audioSource = GetComponent<AudioSource>();
     }
@@ -82,6 +85,26 @@ public class AmmoKit : MonoBehaviour
 
                 if(currentAmmo <= maxAmmo){
                     flamethrowerText.text = newAmmo.ToString();
+                    audioSource.clip = AmmoSound;
+                    audioSource.Play();
+                    Destroy(this.gameObject, 0.22f);
+                }
+            }
+        }
+
+        if(other.gameObject.tag == "PlayerModel" && molotoves){
+            if(int.TryParse(molotovText.text, out int currentAmmo)){
+                int newAmmo = currentAmmo + ammoAmount;
+                newAmmo = Mathf.Clamp(newAmmo, 0, maxAmmo);
+
+                if(currentAmmo == maxAmmo){
+                    audioSource.clip = maxAmmoSound;
+                    audioSource.Play();
+                    return;
+                }
+
+                if(currentAmmo <= maxAmmo){
+                    molotovText.text = newAmmo.ToString();
                     audioSource.clip = AmmoSound;
                     audioSource.Play();
                     Destroy(this.gameObject, 0.22f);

@@ -22,7 +22,6 @@ public class RocketLauncherShoot : MonoBehaviour
     private int removeModifier = 1;
 
     private bool ableToShoot = true;
-    public bool shot = false;
 
     void Start(){
         ammoText = GameObject.Find("RocketLauncherAmmo").GetComponent<TextMeshProUGUI>();
@@ -55,9 +54,8 @@ public class RocketLauncherShoot : MonoBehaviour
         newObject.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
         newObject.GetComponent<AudioSource>().PlayOneShot(rocketFireSound);
 
-        shot = true;
-
         RemoveAmmo();
+        
         MoveTowardsMouse(newObject);
     }
 

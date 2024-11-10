@@ -7,6 +7,7 @@ public class SwitchItems : MonoBehaviour
     private Dictionary<KeyCode, GameObject> keyToGameObject = new Dictionary<KeyCode, GameObject>();
 
     private AudioSource audioSource;
+    public AudioClip weaponSwitchSound;
 
     private GameObject currentActiveObject;
 
@@ -16,12 +17,14 @@ public class SwitchItems : MonoBehaviour
 
     void Start()
     {
-        audioSource = GameObject.Find("WeaponSoundGameObject").GetComponent<AudioSource>();
+        audioSource = GameObject.Find("PlayerModel").GetComponent<AudioSource>();
         
         keyToGameObject.Add(KeyCode.Alpha1, GameObject.Find("Pistol"));
         keyToGameObject.Add(KeyCode.Alpha2, GameObject.Find("Shotgun"));
         keyToGameObject.Add(KeyCode.Alpha3, GameObject.Find("RocketLauncher"));
         keyToGameObject.Add(KeyCode.Alpha4, GameObject.Find("Flamethrower"));
+        keyToGameObject.Add(KeyCode.Alpha5, GameObject.Find("Molotov"));
+        keyToGameObject.Add(KeyCode.Alpha6, GameObject.Find("Deathwad"));
     }
 
     IEnumerator UnequipWeapons(){
@@ -33,7 +36,7 @@ public class SwitchItems : MonoBehaviour
     {
         foreach (var kvp in keyToGameObject)
         {
-            if (Input.GetKeyDown(kvp.Key))
+            if (Input.GetKeyDown(kvp.Key) && !GetComponent<PlayerBurn>().isBurning)
             {
                 if (currentActiveObject != null)
                 {
@@ -48,7 +51,7 @@ public class SwitchItems : MonoBehaviour
                         currentActiveObject.SetActive(false);
                         kvp.Value.SetActive(true);
                         currentActiveObject = kvp.Value;
-                        audioSource.Play();
+                        audioSource.PlayOneShot(weaponSwitchSound);
                     }
                 }
                 else
@@ -58,6 +61,9 @@ public class SwitchItems : MonoBehaviour
                     audioSource.Play();
                 }
             }
+        }
+        if(GetComponent<PlayerBurn>().isBurning){
+            currentActiveObject.SetActive(false);
         }
     }
 

@@ -25,4 +25,12 @@ public class AudioFadeIn : MonoBehaviour
 
         audioSource.volume = Mathf.Lerp(audioSource.volume, targetVolume, Time.deltaTime * volumeFadeSpeed);
     }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, minVolumeDistance);
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, maxVolumeDistance);
+    }
 }

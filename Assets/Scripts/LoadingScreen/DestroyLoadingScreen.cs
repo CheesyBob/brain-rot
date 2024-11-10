@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class DestroyLoadingScreen : MonoBehaviour
 {
@@ -8,13 +9,11 @@ public class DestroyLoadingScreen : MonoBehaviour
     public bool canShoot = false;
     public bool startLevel = false;
 
-    public GameObject[] objectsToDisable;
-
-    void Start()
-    {
-        foreach (GameObject obj in objectsToDisable)
+    void Start(){
+        NavMeshAgent[] agents = FindObjectsOfType<NavMeshAgent>();
+        foreach (NavMeshAgent agent in agents)
         {
-            obj.SetActive(false);
+            agent.isStopped = true;
         }
     }
 
@@ -25,17 +24,18 @@ public class DestroyLoadingScreen : MonoBehaviour
             canShoot = true;
             startLevel = true;
 
-            gameObject.GetComponent<DestroyLoadingScreen>().enabled = false;
-
             Destroy(Background);
             Destroy(Text);
 
             GetComponent<AudioSource>().Pause();
 
-            foreach (GameObject obj in objectsToDisable)
+            NavMeshAgent[] agents = FindObjectsOfType<NavMeshAgent>();
+            foreach (NavMeshAgent agent in agents)
             {
-                obj.SetActive(true);
+                agent.isStopped = false;
             }
+
+            gameObject.GetComponent<DestroyLoadingScreen>().enabled = false;
         }
     }
 }

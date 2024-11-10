@@ -8,14 +8,12 @@ public class PistolEnemy : MonoBehaviour
     public GameObject bulletPrefab;
 
     private Transform player;
-    public Transform muzzlePoint;
-    public Transform enemyPistol;
+    public GameObject muzzlePoint;
 
     public LineRenderer bulletLine;
     public LayerMask shootableLayer;
 
     private AudioSource audioSource;
-    public AudioClip pistolShootSound;
 
     public float bulletSpeed;
     public float bulletLineDuration;
@@ -27,8 +25,6 @@ public class PistolEnemy : MonoBehaviour
 
     void Start(){
         player = GameObject.Find("PlayerModel").transform;
-        
-        audioSource = this.gameObject.GetComponent<AudioSource>();
     }
 
     void Update()
@@ -60,14 +56,13 @@ public class PistolEnemy : MonoBehaviour
 
         Vector3 fireDirection = CalculateFireDirection();
 
-        GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.identity);
+        GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.transform.position, Quaternion.identity);
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
-        rb.linearVelocity = fireDirection * bulletSpeed;
+        rb.velocity = fireDirection * bulletSpeed;
         Destroy(bullet, 1f);
 
-        audioSource.clip = pistolShootSound;
-        audioSource.Play();
+        GetComponent<AudioSource>().Play();
 
         StartCoroutine("PlayMuzzleFlash");
         DisplayLine();
@@ -78,20 +73,17 @@ public class PistolEnemy : MonoBehaviour
         
         Vector3 fireDirection = CalculateFireDirection();
 
-        if(Physics.Raycast(muzzlePoint.position, fireDirection, out RaycastHit hit, shootableLayer)){
+        if(Physics.Raycast(muzzlePoint.transform.position, fireDirection, out RaycastHit hit, shootableLayer)){
             bulletLine.SetPosition(1, hit.point);
         }
         else{
             bulletLine.SetPosition(1, player.position);
         }
 
-        if (bulletLine != null)
-        {
-            StartCoroutine(HideLineAfterDuration());
+        StartCoroutine(HideLineAfterDuration());
 
-            cooldownTimer = cooldownTime;
-            isCoolingDown = true;
-        }
+        cooldownTimer = cooldownTime;
+        isCoolingDown = true;
     }
 
     Vector3 CalculateFireDirection()
@@ -99,20 +91,20 @@ public class PistolEnemy : MonoBehaviour
         RaycastHit hit;
         Vector3 fireDirection;
 
-        if (Physics.Raycast(muzzlePoint.position, player.position - muzzlePoint.position, out hit, shootableLayer))
+        if (Physics.Raycast(muzzlePoint.transform.position, player.position - muzzlePoint.transform.position, out hit, shootableLayer))
         {
-            fireDirection = (hit.point - muzzlePoint.position).normalized;
+            fireDirection = (hit.point - muzzlePoint.transform.position).normalized;
         }
         else
         {
-            fireDirection = (player.position - muzzlePoint.position).normalized;
+            fireDirection = (player.position - muzzlePoint.transform.position).normalized;
         }
 
         return fireDirection;
     }
 
     void UpdateBulletLine(){
-        bulletLine.SetPosition(0, muzzlePoint.position);
+        bulletLine.SetPosition(0, muzzlePoint.transform.position);
     }
 
     IEnumerator HideLineAfterDuration(){

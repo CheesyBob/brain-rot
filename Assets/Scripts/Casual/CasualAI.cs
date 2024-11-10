@@ -73,6 +73,10 @@ public class CasualAI : MonoBehaviour
             currentHealth = 0f;
         }
 
+        if(currentHealth < 0f){
+            currentHealth = 0f;
+        }
+
         if(currentHealth == 0f){
             GetComponent<EnemyDeath>().dead = true;
         }

@@ -13,8 +13,6 @@ public class ShotgunShoot : MonoBehaviour
 
     private Camera mainCamera;
 
-    public Material ShotgunMenuMat;
-
     public LineRenderer bulletLine;
 
     public LayerMask shootableLayer;
@@ -27,7 +25,6 @@ public class ShotgunShoot : MonoBehaviour
     public float fireRate;
     public float bulletSpeed;
     public float bulletDuration;
-    public float teleportDuration;
     public float lineDuration;
     private float nextFireTime;
 
@@ -36,14 +33,13 @@ public class ShotgunShoot : MonoBehaviour
     public int currentAmmo;
 
     public bool ableToShoot;
-    public bool executeShoot = false;
-    public bool shot = false;
 
     public Vector3 distanceFromGun;
-    private Vector3 originalTeleportPosition;
 
-    private void Start(){
-    
+    public float bulletSpread;
+
+    private void Start()
+    {
         muzzleFlash.SetActive(false);
         bulletLine.enabled = false;
 
@@ -51,20 +47,22 @@ public class ShotgunShoot : MonoBehaviour
         mainCamera = DestroyClonedPlayer.Instance.playerCamera.GetComponent<Camera>();
     }
 
-    void OnEnable(){
+    void OnEnable()
+    {
         muzzleFlash.SetActive(false);
         bulletLine.enabled = false;
     }
 
     private void Update()
     {
-        if (Input.GetButton("Fire1") && Time.time >= nextFireTime && GameObject.Find("LoadingScreenCanvas").GetComponent<DestroyLoadingScreen>().canShoot){
+        if (Input.GetButton("Fire1") && Time.time >= nextFireTime && GameObject.Find("LoadingScreenCanvas").GetComponent<DestroyLoadingScreen>().canShoot)
+        {
             Shoot();
 
             nextFireTime = Time.time + fireRate;
         }
 
-        if(int.TryParse(ammoText.text, out currentAmmo))
+        if (int.TryParse(ammoText.text, out currentAmmo))
         {
             UpdateText();
         }
@@ -74,25 +72,23 @@ public class ShotgunShoot : MonoBehaviour
 
     public void Shoot()
     {
-        if(ableToShoot){
+        if (ableToShoot)
+        {
             Vector3 startPoint = GetGunEndPosition();
             Vector3 endPoint = GetMouseWorldPosition();
 
             endPoint.y = startPoint.y;
 
-            shot = true;
-
             StartCoroutine("PlayMuzzleFlash");
 
-            if(!executeShoot){
-                DisplayLine(startPoint, endPoint);
-                ShootBullet(startPoint, endPoint);
-            }
+            DisplayLine(startPoint, endPoint);
+            ShootBullet(startPoint, endPoint);
 
             audioSource.clip = pistolShootSound;
             audioSource.Play();
         }
-        if(!ableToShoot){
+        else
+        {
             audioSource.PlayOneShot(noAmmoSound);
         }
     }
@@ -153,15 +149,16 @@ public class ShotgunShoot : MonoBehaviour
 
     private void ShootBullet(Vector3 start, Vector3 end)
     {
-        for(int i = 0; i < pelletModifier; i++){
+        for (int i = 0; i < pelletModifier; i++)
+        {
             Vector3 direction = (end - start).normalized;
+
+            direction = Quaternion.Euler(Random.Range(-bulletSpread, bulletSpread), Random.Range(-bulletSpread, bulletSpread), 0) * direction;
 
             GameObject bullet = Instantiate(bulletPrefab, start, Quaternion.identity);
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
-            rb.linearVelocity = direction * bulletSpeed;
-
-            Ray ray = new Ray(start, direction);
+            rb.velocity = direction * bulletSpeed;
 
             Destroy(bullet, bulletDuration);
             
@@ -174,23 +171,28 @@ public class ShotgunShoot : MonoBehaviour
         ammoText.text = currentAmmo.ToString();
     }
 
-    private void RemoveAmmo(){
-        if(currentAmmo >= 0)
+    private void RemoveAmmo()
+    {
+        if (currentAmmo >= 0)
         {
             currentAmmo -= removeModifier;
-            
+
             UpdateText();
         }
     }
 
-    private void AmmoCheck(){
-        if(currentAmmo >= 0){
+    private void AmmoCheck()
+    {
+        if (currentAmmo >= 0)
+        {
             ableToShoot = true;
         }
-        if(currentAmmo <= 0){
+        if (currentAmmo <= 0)
+        {
             ableToShoot = false;
         }
-        if(ammoText.text == "-1"){
+        if (ammoText.text == "-1")
+        {
             ammoText.text = "0";
         }
     }

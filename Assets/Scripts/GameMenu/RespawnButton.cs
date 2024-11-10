@@ -13,11 +13,25 @@ public class RespawnButton : MonoBehaviour
     public Animator playerAnimator;
 
     private TextMeshProUGUI healthText;
+    public TextMeshProUGUI shotgunText;
+    public TextMeshProUGUI rocketLauncherText;
+    public TextMeshProUGUI flamethrowerText;
+    public TextMeshProUGUI molotovText;
 
     private int previousSceneIndex;
 
+    public string initialShotgunText;
+    public string initialRocketLauncherText;
+    public string initialFlamethrowerText;
+    public string initialMolotovText;
+
     void Awake(){
         WeaponHolder = GameObject.Find("WeaponHolder");
+
+        initialShotgunText = shotgunText.text;
+        initialRocketLauncherText = rocketLauncherText.text;
+        initialFlamethrowerText = flamethrowerText.text;
+        initialMolotovText = molotovText.text;
     }
 
     void Start()
@@ -29,17 +43,20 @@ public class RespawnButton : MonoBehaviour
     public void OnClick()
     {
         healthText.text = "100";
+        shotgunText.text = initialShotgunText;
+        rocketLauncherText.text = initialRocketLauncherText;
+        flamethrowerText.text = initialFlamethrowerText;
+        molotovText.text = initialMolotovText;
 
         respawnPannel.SetActive(false);
 
-        player.GetComponent<HealthStatus>().death = false;
+        player.GetComponent<HealthStatus>().dead = false;
         player.GetComponent<SwitchItems>().enabled = true;
         player.GetComponent<PlayerMovement>().enabled = true;
 
         WeaponHolder.SetActive(true);
 
         playerAnimator.SetBool("playerDied", false);
-        playerAnimator.SetBool("playerDied2", false);
 
         DeathPannel.GetComponent<DeathFadeIn>().isFading = false;
 

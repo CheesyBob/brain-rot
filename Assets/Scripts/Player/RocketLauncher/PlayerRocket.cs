@@ -6,14 +6,9 @@ using TMPro;
 public class PlayerRocket : MonoBehaviour
 {
     private GameObject PainPannel;
-
     private TextMeshProUGUI healthText;
 
-    public AudioClip explosionSound;
-    public AudioClip[] playerHitSounds;
-
     public float radius;
-
     public int damageAmount;
 
     void Start(){
@@ -21,6 +16,22 @@ public class PlayerRocket : MonoBehaviour
         PainPannel = GameObject.Find("PainPannel");
 
         Destroy(gameObject, 6f);
+    }
+
+    void Update(){
+        if (GetComponent<Rigidbody>().velocity.sqrMagnitude > 0f)
+        {
+            Vector3 horizontalVelocity = new Vector3(GetComponent<Rigidbody>().velocity.x, 0, GetComponent<Rigidbody>().velocity.z);
+
+            if (horizontalVelocity.sqrMagnitude > 0f)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(horizontalVelocity.normalized);
+
+                targetRotation = Quaternion.Euler(90f, targetRotation.eulerAngles.y, targetRotation.eulerAngles.z);
+
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 100f);
+            }
+        }
     }
 
     void OnTriggerEnter(Collider other){
@@ -38,11 +49,16 @@ public class PlayerRocket : MonoBehaviour
 
         if(other.gameObject.tag == "Sentry"){
             other.gameObject.GetComponent<SentryShoot>().Explode();
-
             Explode();
         }
 
         if(other.gameObject.tag == "Ground"){
+            Explode();
+        }
+
+        if(other.gameObject.tag == "Barrel"){
+            other.gameObject.GetComponent<BarrelExplode>().Explode();
+
             Explode();
         }
     }
@@ -68,25 +84,14 @@ public class PlayerRocket : MonoBehaviour
 
         foreach (Collider col in playerColliders){
             if(col.CompareTag("PlayerModel")){
-                if(int.TryParse(healthText.text, out int currentHealth)){
-                    currentHealth -= damageAmount;
-                    currentHealth = Mathf.Max(currentHealth, 0);
-
-                    healthText.text = currentHealth.ToString();
-                }
-                PainPannel.GetComponent<PainFadeIn>().isFading = true;
-
-                PlayHitSounds(playerHitSounds);
+                col.GetComponent<HealthStatus>().DamagePlayer(50);
             }
         }
 
         GetComponent<MeshRenderer>().enabled = false;
-
         GetComponent<CapsuleCollider>().enabled = false;
-
         GetComponent<Rigidbody>().isKinematic = true;
-
-        GetComponent<AudioSource>().PlayOneShot(explosionSound);
+        GetComponent<AudioSource>().Play();
 
         Transform firstChild = transform.GetChild(0);
         firstChild.gameObject.SetActive(true);
@@ -95,14 +100,5 @@ public class PlayerRocket : MonoBehaviour
         secondChild.gameObject.GetComponent<ParticleSystem>().Stop();
 
         Destroy(gameObject, 2f);
-    }
-
-    private void PlayHitSounds(AudioClip[] hitSounds)
-    {
-        if(hitSounds.Length > 0)
-        {
-            AudioClip randomHitSound = hitSounds[Random.Range(0, hitSounds.Length)];
-            GameObject.Find("Player").GetComponent<AudioSource>().PlayOneShot(randomHitSound);
-        }
     }
 }

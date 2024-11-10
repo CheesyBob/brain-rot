@@ -7,208 +7,208 @@ public class EnemyAI : MonoBehaviour
     private UnityEngine.AI.NavMeshAgent navMeshAgent;
 
     public GameObject Pistol;
-    public GameObject ShotgunEnd;
     public GameObject Shotgun;
     public GameObject RocketLauncher;
 
-    private GameObject PlayerPistol;
-    private GameObject PlayerShotgun;
-    private GameObject PlayerRocketLauncher;
+    private GameObject player;
 
-    private Transform playerTransform;
-    
     private Vector3 roamPosition;
 
     public float currentHealth;
-    public float playerBulletDamage;
-    public float chaseRange = 10f;
-    public float attackRange = 2f;
-    public float roamRadius = 5f;
-    public float roamInterval = 5f;
+    public float chaseRange;
+    public float roamRadius;
+    public float roamInterval;
     private float nextRoamTime;
 
-    public bool canShoot = true;
+    private bool isChasingPlayer = false;
+
+    public bool canShoot;
     public bool EnemyPistol;
     public bool EnemyShotgun;
     public bool EnemyRocketLauncher;
-    private bool isChasingPlayer = false;
-    private bool hasAttackedPlayer = false;
-    private bool hasSpottedPlayer = false;
-    private bool hasSetHealth = false;
 
-    public AudioClip[] spottedPlayerAudioClips;
     private AudioSource audioSource;
+    private float audioTimer;
+    private float audioDelay = 5f;
+    public AudioClip[] spottedPlayerAudioClips;
+
+    private LayerMask wallLayer;
 
     void Start()
     {
-        PlayerPistol = DestroyClonedPlayer.Instance.playerPistol;
-        PlayerShotgun = DestroyClonedPlayer.Instance.playerShotgun;
-        PlayerRocketLauncher = DestroyClonedPlayer.Instance.playerRocketLauncher;
-
         navMeshAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         audioSource = GetComponent<AudioSource>();
 
-        playerTransform = GameObject.FindWithTag("PlayerModel").transform;
-        
+        player = GameObject.FindGameObjectWithTag("PlayerModel");
+        audioTimer = audioDelay;
+
+        wallLayer = LayerMask.GetMask("Wall");
+
         SetRandomRoamPosition();
     }
 
     void Update()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-
-        if(currentHealth == 0f && !hasSetHealth){
-            GetComponent<EnemyDeath>().dead = true;
-
-            hasSetHealth = true;
-        }
-
-        if(currentHealth <= 0f && !hasSetHealth){
-            GetComponent<EnemyDeath>().dead = true;
-
-            hasSetHealth = true;
-        }
-
-        if(distanceToPlayer <= chaseRange)
+        if (currentHealth <= 0f)
         {
-            if(HasLineOfSightToPlayer()){
+            HandleDeath();
+            return;
+        }
 
-                if(EnemyPistol){
-                    Pistol.GetComponent<PistolEnemy>().stopFire = false;
-                }
-                if(EnemyShotgun){
-                    ShotgunEnd.GetComponent<ShotgunEnemy>().stopFire = false;
-                }
-                if(EnemyRocketLauncher){
-                    RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().stopFire = false;
-                }
+        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
 
-                isChasingPlayer = true;
+        if (distanceToPlayer <= chaseRange && CanSeePlayer())
+        {
+            isChasingPlayer = true;
+            EnableShooting();
 
-                PlayerPistol.GetComponent<PistolShoot>().shot = false;
-                PlayerShotgun.GetComponent<ShotgunShoot>().shot = false;
-                PlayerRocketLauncher.GetComponent<RocketLauncherShoot>().shot = false;
+            if (audioTimer <= 0)
+            {
+                PlayRandomAudioClip();
+                audioTimer = audioDelay;
             }
-            else{
-                if(EnemyPistol){
-                    Pistol.GetComponent<PistolEnemy>().stopFire = true;
-                }
-                if(EnemyShotgun){
-                    ShotgunEnd.GetComponent<ShotgunEnemy>().stopFire = true;
-                }
-                if(EnemyRocketLauncher){
-                    RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().stopFire = true;
-                }
+            else
+            {
+                audioTimer -= Time.deltaTime;
             }
+
+            ChasePlayer();
         }
         else
         {
             isChasingPlayer = false;
+            DisableShooting();
+            Roam();
         }
 
-        if(isChasingPlayer)
+        if (player.GetComponent<HealthStatus>().dead)
         {
-            navMeshAgent.SetDestination(playerTransform.position);
-
-            if(!hasSpottedPlayer && canShoot)
-            {
-                SpottedPlayerAudioClip();
-
-                hasSpottedPlayer = true;
-            }
-
-            if(!hasAttackedPlayer){
-                if(EnemyPistol && canShoot){
-                    Pistol.GetComponent<PistolEnemy>().FirePistol();
-                }
-                if(EnemyShotgun && canShoot){
-                    ShotgunEnd.GetComponent<ShotgunEnemy>().FireShotgun();
-                }
-                if(EnemyRocketLauncher && canShoot){
-                    StartCoroutine("FireRocketDelay");
-                }
-            }
+            canShoot = false;
         }
-        else
+
+        UpdateAnimationState();
+    }
+
+    void HandleDeath()
+    {
+        GetComponent<EnemyDeath>().dead = true;
+    }
+
+    void EnableShooting()
+    {
+        if (EnemyPistol)
+            Pistol.GetComponent<PistolEnemy>().stopFire = false;
+        if (EnemyShotgun)
+            Shotgun.GetComponent<ShotgunEnemy>().stopFire = false;
+        if (EnemyRocketLauncher)
+            RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().stopFire = false;
+    }
+
+    void DisableShooting()
+    {
+        if (EnemyPistol)
+            Pistol.GetComponent<PistolEnemy>().stopFire = true;
+        if (EnemyShotgun)
+            Shotgun.GetComponent<ShotgunEnemy>().stopFire = true;
+        if (EnemyRocketLauncher)
+            RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().stopFire = true;
+    }
+
+    bool CanSeePlayer()
+    {
+        Vector3 directionToPlayer = player.transform.position - transform.position;
+        float distanceToPlayer = directionToPlayer.magnitude;
+
+        RaycastHit hit;
+
+        if (Physics.SphereCast(transform.position, 0.5f, directionToPlayer, out hit, distanceToPlayer, wallLayer))
         {
-            if(Time.time >= nextRoamTime)
+            if (hit.collider.CompareTag("Wall"))
             {
-                SetRandomRoamPosition();
-
-                nextRoamTime = Time.time + roamInterval;
+                return false;
             }
-            hasAttackedPlayer = false;
-            hasSpottedPlayer = false;
+        }
+        return true;
+    }
 
-            navMeshAgent.SetDestination(roamPosition);
-        }
-        if(PlayerPistol.GetComponent<PistolShoot>().shot && distanceToPlayer >= chaseRange){
-            navMeshAgent.SetDestination(playerTransform.position);
-        }
-        if(PlayerShotgun.GetComponent<ShotgunShoot>().shot && distanceToPlayer >= chaseRange){
-            navMeshAgent.SetDestination(playerTransform.position);
-        }
-        if(PlayerRocketLauncher.GetComponent<RocketLauncherShoot>().shot && distanceToPlayer >= chaseRange){
-            navMeshAgent.SetDestination(playerTransform.position);
+
+    void ChasePlayer()
+    {
+        navMeshAgent.SetDestination(player.transform.position);
+
+        Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
+        
+        if (directionToPlayer != Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer) * Quaternion.Euler(0, -90, 0);
+
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 360 * Time.deltaTime);
         }
 
-        if(navMeshAgent.velocity.magnitude == 0){
-            GetComponent<Animator>().SetBool("isRunning", false);
-        }
-        else{
-            GetComponent<Animator>().SetBool("isRunning", true);
+        if (canShoot && CanSeePlayer())
+        {
+            ShootAtPlayer();
         }
     }
 
-    IEnumerator FireRocketDelay(){
-        yield return new WaitForSeconds(.4f);
-        RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().FireRocket();
+    void ShootAtPlayer()
+    {
+        if (EnemyPistol && canShoot)
+            Pistol.GetComponent<PistolEnemy>().FirePistol();
+        if (EnemyShotgun && canShoot)
+            Shotgun.GetComponent<ShotgunEnemy>().FireShotgun();
+        if (EnemyRocketLauncher && canShoot)
+            StartCoroutine(FireRocketDelay());
+    }
+
+    void Roam()
+    {
+        if (Time.time >= nextRoamTime)
+        {
+            SetRandomRoamPosition();
+            nextRoamTime = Time.time + roamInterval;
+        }
+
+        navMeshAgent.SetDestination(roamPosition);
     }
 
     void SetRandomRoamPosition()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * roamRadius;
-
-        randomDirection += transform.position;
-
+        Vector3 randomDirection = Random.insideUnitSphere * roamRadius + transform.position;
         UnityEngine.AI.NavMeshHit hit;
 
-        UnityEngine.AI.NavMesh.SamplePosition(randomDirection, out hit, roamRadius, 1);
-
-        roamPosition = hit.position;
-    }
-
-    bool HasLineOfSightToPlayer()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, playerTransform.position - transform.position, out hit, chaseRange))
+        if (UnityEngine.AI.NavMesh.SamplePosition(randomDirection, out hit, roamRadius, 1))
         {
-            if (hit.collider.CompareTag("PlayerModel"))
-            {
-                return true;
-            }
+            roamPosition = hit.position;
         }
-
-        return false;
     }
 
-    void SpottedPlayerAudioClip()
+    IEnumerator FireRocketDelay()
     {
-        if (spottedPlayerAudioClips.Length > 0)
+        yield return new WaitForSeconds(0.4f);
+        RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().FireRocket();
+    }
+
+    void PlayRandomAudioClip()
+    {
+        if (spottedPlayerAudioClips.Length > 0 && audioSource != null && !audioSource.isPlaying && !GetComponent<EnemyDeath>().dead)
         {
             int randomIndex = Random.Range(0, spottedPlayerAudioClips.Length);
-
             audioSource.PlayOneShot(spottedPlayerAudioClips[randomIndex]);
         }
     }
 
-    void OnTriggerEnter(Collider other){
-        if(other.gameObject.tag == "PlayerBullet"){
-            if(currentHealth >= 0f && !hasSetHealth){
-                currentHealth -= playerBulletDamage;
+    void UpdateAnimationState()
+    {
+        GetComponent<Animator>().SetBool("isRunning", navMeshAgent.velocity.magnitude > 0);
+    }
 
-                currentHealth = Mathf.Max(currentHealth, 0);
-            }
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("PlayerBullet") && currentHealth > 0f)
+        {
+            currentHealth -= other.GetComponent<PistolBullet>().damageAmount;
+            currentHealth = Mathf.Max(currentHealth, 0);
         }
     }
 }

@@ -54,7 +54,7 @@ public class EnemyRocketLauncherShoot : MonoBehaviour
 
         newObject.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 
-        newObject.GetComponent<Rigidbody>().linearVelocity = fireDirection * 18f;
+        newObject.GetComponent<Rigidbody>().velocity = fireDirection * 18f;
 
         newObject.GetComponent<AudioSource>().PlayOneShot(rocketFireSound);
 

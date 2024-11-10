@@ -6,65 +6,124 @@ using UnityEngine.AI;
 public class EnemyBurning : MonoBehaviour
 {
     public GameObject BurningParticles;
-
     public AudioClip igniteSound;
     public AudioClip[] burningVoiceLines;
 
-    public float currentValue;
-    public float decreaseRate;
-    private float wanderRadius = 1000f;
+    public float fadeDuration;
+    public float healthDecreaseRate;
+    private float fadeAmount = 0.0f;
 
-    public bool hasBurned;
     public bool casual;
 
+    private int materialIndex = 0;
+    public SkinnedMeshRenderer[] additionalSkinnedRenderers;
+
     private NavMeshAgent agent;
+    private bool isFading = true;
+
+    private SkinnedMeshRenderer mainSkinnedRenderer;
+    private Color originalColor;
 
     void Start()
     {
-        if(!GetComponent<EnemyDeath>().dead){
+        if (!GetComponent<EnemyDeath>().dead)
+        {
             agent = GetComponent<NavMeshAgent>();
+
+            mainSkinnedRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+
+            if (materialIndex < mainSkinnedRenderer.materials.Length)
+            {
+                originalColor = mainSkinnedRenderer.materials[materialIndex].color;
+            }
 
             BurningParticles.GetComponent<ParticleSystem>().Play();
 
             GetComponent<AudioSource>().PlayOneShot(igniteSound);
 
-            if(!casual){
+            if (!casual)
+            {
                 GetComponent<EnemyAI>().enabled = false;
                 GetComponent<Animator>().SetBool("isBurning", true);
             }
 
-            if(casual){
+            if (casual)
+            {
                 GetComponent<CasualAI>().enabled = false;
+                GetComponent<Animator>().SetBool("isBurning", true);
             }
 
             StartCoroutine(PlayRandomVoiceLine());
-            
             MoveToRandomPosition();
         }
     }
 
     void Update()
     {
-        if(!GetComponent<EnemyDeath>().dead){
-            currentValue -= decreaseRate * Time.deltaTime;
+        ApplyFadeToRenderers();
 
-            if (currentValue < 0)
-            {
-                currentValue = 0;
-
-                hasBurned = true;
-
-                GetComponent<EnemyDeath>().dead = true;
-
-                BurningParticles.GetComponent<ParticleSystem>().Stop();
-
-                enabled = false;
-            }
-
+        if (!GetComponent<EnemyDeath>().dead)
+        {
             if (!agent.pathPending && agent.remainingDistance < 0.5f)
             {
                 MoveToRandomPosition();
             }
+        }
+
+        if (!casual && GetComponent<EnemyAI>().currentHealth > 0)
+        {
+            GetComponent<EnemyAI>().currentHealth -= healthDecreaseRate * Time.deltaTime;
+            
+            if (GetComponent<EnemyAI>().currentHealth <= 0)
+            {
+                GetComponent<EnemyAI>().currentHealth = 0;
+                GetComponent<EnemyDeath>().dead = true;
+                BurningParticles.GetComponent<ParticleSystem>().Stop();
+            }
+        }
+
+        if (casual && GetComponent<CasualAI>().currentHealth > 0)
+        {
+            GetComponent<CasualAI>().currentHealth -= healthDecreaseRate * Time.deltaTime;
+
+            if (GetComponent<CasualAI>().currentHealth <= 0)
+            {
+                GetComponent<CasualAI>().currentHealth = 0;
+                GetComponent<EnemyDeath>().dead = true;
+                BurningParticles.GetComponent<ParticleSystem>().Stop();
+            }
+        }
+    }
+
+    private void ApplyFadeToRenderers()
+    {
+        if (isFading && fadeAmount < 1.0f)
+        {
+            fadeAmount += Time.deltaTime / fadeDuration;
+            Color targetColor = Color.Lerp(originalColor, Color.black, fadeAmount);
+
+            ApplyFadeToRenderer(mainSkinnedRenderer, targetColor);
+
+            foreach (var renderer in additionalSkinnedRenderers)
+            {
+                ApplyFadeToRenderer(renderer, targetColor);
+            }
+
+            if (fadeAmount >= 1.0f)
+            {
+                isFading = false;
+                fadeAmount = 1.0f;
+            }
+        }
+    }
+
+    private void ApplyFadeToRenderer(SkinnedMeshRenderer renderer, Color targetColor)
+    {
+        if (materialIndex < renderer.materials.Length)
+        {
+            Material[] materials = renderer.materials;
+            materials[materialIndex].color = targetColor;
+            renderer.materials = materials;
         }
     }
 
@@ -73,7 +132,7 @@ public class EnemyBurning : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(Random.Range(1f, 2f));
-            if (burningVoiceLines.Length > 0 && !hasBurned)
+            if (burningVoiceLines.Length > 0 && !GetComponent<EnemyDeath>().dead)
             {
                 int randomIndex = Random.Range(0, burningVoiceLines.Length);
                 GetComponent<AudioSource>().PlayOneShot(burningVoiceLines[randomIndex]);
@@ -83,12 +142,12 @@ public class EnemyBurning : MonoBehaviour
 
     void MoveToRandomPosition()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
+        Vector3 randomDirection = Random.insideUnitSphere * 1000000f;
         randomDirection += transform.position;
 
         NavMeshHit navHit;
 
-        NavMesh.SamplePosition(randomDirection, out navHit, wanderRadius, -1);
+        NavMesh.SamplePosition(randomDirection, out navHit, 1000000f, -1);
         agent.SetDestination(navHit.position);
     }
 }

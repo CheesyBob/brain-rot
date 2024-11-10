@@ -1,16 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class LoadingScreenEffect : MonoBehaviour
 {
-    public float transparentAmount;
-    public float rotationSpeed;
-    public float radius;
-    public float speed;
-    public float circleInterval;
-    public float fadeInDuration;
+    public float transparentAmount = 1f;
+    public float rotationSpeed = 1f;
+    public float radius = 50f;
+    public float speed = 1f;
+    public float circleInterval = 1f;
+    public float fadeInDuration = 1f;
+    public float fadeOutDuration = 1f;
+    public float displayDuration = 2f;
 
     private static bool cloneExists = false;
     private bool isClone = false;
@@ -18,8 +21,18 @@ public class LoadingScreenEffect : MonoBehaviour
     private float angle = 0f;
     private float timer = 0f;
 
+    private MaskableGraphic graphicComponent;
+
     void Start()
     {
+        graphicComponent = GetComponent<Image>() as MaskableGraphic ?? GetComponent<TextMeshProUGUI>() as MaskableGraphic;
+
+        if (graphicComponent == null)
+        {
+            Debug.LogError("No Image or TextMeshProUGUI component found!");
+            return;
+        }
+
         if (!cloneExists && !isClone)
         {
             StartCoroutine("WaitToCreateClone");
@@ -30,9 +43,20 @@ public class LoadingScreenEffect : MonoBehaviour
     {
         yield return new WaitForSeconds(circleInterval);
         GameObject clonedObject = CloneAndMakeTransparent();
-        StartCoroutine(FadeIn(clonedObject.GetComponent<Image>()));
+        MaskableGraphic clonedGraphic = clonedObject.GetComponent<Image>() as MaskableGraphic ?? clonedObject.GetComponent<TextMeshProUGUI>() as MaskableGraphic;
+
+        if (clonedGraphic != null)
+        {
+            StartCoroutine(SmoothFadeIn(clonedGraphic));
+        }
 
         cloneExists = true;
+
+        yield return new WaitForSeconds(displayDuration);
+        if (clonedGraphic != null)
+        {
+            StartCoroutine(SmoothFadeOutAndRestart(clonedGraphic));
+        }
     }
 
     void Update()
@@ -83,34 +107,59 @@ public class LoadingScreenEffect : MonoBehaviour
         LoadingScreenEffect cloneScript = clonedObject.GetComponent<LoadingScreenEffect>();
         cloneScript.isClone = true;
 
-        Image clonedImage = clonedObject.GetComponent<Image>();
+        MaskableGraphic clonedGraphic = clonedObject.GetComponent<Image>() as MaskableGraphic ?? clonedObject.GetComponent<TextMeshProUGUI>() as MaskableGraphic;
 
-        if (clonedImage != null)
+        if (clonedGraphic != null)
         {
-            Color color = clonedImage.color;
+            Color color = clonedGraphic.color;
             color.a = 0f;
-            clonedImage.color = color;
+            clonedGraphic.color = color;
         }
 
         return clonedObject;
     }
 
-    IEnumerator FadeIn(Image image)
+    IEnumerator SmoothFadeIn(MaskableGraphic graphic)
     {
         float elapsedTime = 0f;
 
         while (elapsedTime < fadeInDuration)
         {
-            elapsedTime += Time.deltaTime;
-            Color color = image.color;
-            color.a = Mathf.Lerp(0f, transparentAmount, elapsedTime / fadeInDuration);
-            image.color = color;
+            elapsedTime += Time.unscaledDeltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, elapsedTime / fadeInDuration);
+            Color color = graphic.color;
+            color.a = Mathf.Lerp(0f, transparentAmount, t);
+            graphic.color = color;
             yield return null;
         }
 
-        Color finalColor = image.color;
+        Color finalColor = graphic.color;
         finalColor.a = transparentAmount;
-        image.color = finalColor;
+        graphic.color = finalColor;
+    }
+
+    IEnumerator SmoothFadeOutAndRestart(MaskableGraphic graphic)
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeOutDuration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, elapsedTime / fadeOutDuration);
+            Color color = graphic.color;
+            color.a = Mathf.Lerp(transparentAmount, 0f, t);
+            graphic.color = color;
+            yield return null;
+        }
+
+        Color finalColor = graphic.color;
+        finalColor.a = 0f;
+        graphic.color = finalColor;
+
+        cloneExists = false;
+        isClone = false;
+        Destroy(graphic.gameObject);
+        StartCoroutine(WaitToCreateClone());
     }
 
     private void OnEnable()

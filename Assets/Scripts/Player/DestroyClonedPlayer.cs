@@ -9,6 +9,8 @@ public class DestroyClonedPlayer : MonoBehaviour
     public GameObject playerShotgun;
     public GameObject playerRocketLauncher;
     public GameObject playerFlamethrower;
+    public GameObject playerMolotov;
+    public GameObject playerDeathwad;
 
     private static bool playerExists;
 

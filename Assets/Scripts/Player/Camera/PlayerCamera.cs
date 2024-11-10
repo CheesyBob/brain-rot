@@ -8,7 +8,6 @@ public class PlayerCamera : MonoBehaviour
 
     public float distance;
     public float height;
-    private float smoothSpeed = 1000f;
 
     private Vector3 offset;
 
@@ -24,7 +23,7 @@ public class PlayerCamera : MonoBehaviour
         Vector3 desiredPosition = Player.position + offset.normalized * distance;
         desiredPosition.y = height;
 
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, 1000 * Time.deltaTime);
         transform.position = smoothedPosition;
 
         transform.LookAt(Player.position);

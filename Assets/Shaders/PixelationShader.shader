@@ -3,13 +3,13 @@ Shader "Hidden/PixelationShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _pixels("Resolution", int) = 0
-        _pw("Pixel Width", float) = 0
-        _ph("Pixel Height", float) = 0
+        _pixels ("Resolution", int) = 0
+        _pw ("Pixel Width", float) = 0
+        _ph ("Pixel Height", float) = 0
+        _TintColor ("Tint Color", Color) = (1,1,1,1)
     }
     SubShader
     {
-        // No culling or depth
         Cull Off ZWrite Off ZTest Always
 
         Pass
@@ -39,6 +39,7 @@ Shader "Hidden/PixelationShader"
                 o.uv = v.uv;
                 return o;
             }
+
             float _pixels;
             float _pw;
             float _ph;
@@ -46,6 +47,7 @@ Shader "Hidden/PixelationShader"
             float _dy;
 
             sampler2D _MainTex;
+            fixed4 _TintColor;
 
             fixed4 frag (v2f i) : SV_Target
             {
@@ -53,6 +55,7 @@ Shader "Hidden/PixelationShader"
                 _dy = _ph * (1 / _pixels);
                 float2 coord = float2(_dx * floor(i.uv.x / _dx), _dy * floor(i.uv.y / _dy));
                 fixed4 col = tex2D(_MainTex, coord);
+                col *= _TintColor;
                 return col;
             }
             ENDCG
