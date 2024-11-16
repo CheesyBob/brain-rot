@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e6bfe85507e095048ac81c3823628524
+guid: 3e699f902368c8c489f27022d5b6d742
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Smash
+  - Yeah Papa
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

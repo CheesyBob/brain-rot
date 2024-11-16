@@ -23,7 +23,7 @@ public class DeathwadShoot : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && deathwadFireAmount.CanShoot() && GameObject.Find("LoadingScreenCanvas").GetComponent<DestroyLoadingScreen>().canShoot)
+        if (Input.GetMouseButtonDown(0) && deathwadFireAmount.CanShoot())
         {
             SpawnNewObject();
         }

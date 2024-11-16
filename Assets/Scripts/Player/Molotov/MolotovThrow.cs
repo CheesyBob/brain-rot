@@ -24,7 +24,7 @@ public class MolotovThrow : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetButtonDown("Fire1") && ableToShoot && GameObject.Find("LoadingScreenCanvas").GetComponent<DestroyLoadingScreen>().canShoot)
+        if (Input.GetButtonDown("Fire1") && ableToShoot)
         {
             for (int i = 0; i < molotovsToThrow; i++)
             {
