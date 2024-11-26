@@ -7,6 +7,7 @@ public class EnemyRocketLauncherShoot : MonoBehaviour
     public GameObject rocket;
     public Transform spawnPoint;
     public float cooldownTime;
+    private float maxRange = 20f;
 
     private float cooldownTimer = 0f;
     private bool isCoolingDown = false;
@@ -35,36 +36,39 @@ public class EnemyRocketLauncherShoot : MonoBehaviour
             return;
         }
 
-        GameObject newObject = Instantiate(rocket, spawnPoint.position, Quaternion.identity);
+        Vector3 fireDirection = Vector3.forward;
 
-        Vector3 fireDirectionCasual = CalculateFireDirection("Casual");
+        GameObject playerTarget = FindClosestTargetWithTag("PlayerModel");
+        GameObject casualTarget = FindClosestTargetWithTag("Casual");
 
-        if (fireDirectionCasual == Vector3.forward)
+        float playerDistance = playerTarget != null 
+            ? Vector3.Distance(spawnPoint.position, playerTarget.transform.position) 
+            : Mathf.Infinity;
+        float casualDistance = casualTarget != null 
+            ? Vector3.Distance(spawnPoint.position, casualTarget.transform.position) 
+            : Mathf.Infinity;
+
+        if (playerDistance <= maxRange)
         {
-            fireDirectionCasual = CalculateFireDirection("PlayerModel");
+            fireDirection = (playerTarget.transform.position - spawnPoint.position).normalized;
+        }
+        else if (casualDistance <= maxRange)
+        {
+            fireDirection = (casualTarget.transform.position - spawnPoint.position).normalized;
+        }
+        else
+        {
+            return;
         }
 
-        newObject.transform.rotation = Quaternion.LookRotation(fireDirectionCasual);
-
-        newObject.GetComponent<Rigidbody>().velocity = fireDirectionCasual.normalized * 18f;
+        GameObject newObject = Instantiate(rocket, spawnPoint.position, Quaternion.identity);
+        newObject.transform.rotation = Quaternion.LookRotation(fireDirection);
+        newObject.GetComponent<Rigidbody>().velocity = fireDirection.normalized * 18f;
 
         GetComponent<AudioSource>().Play();
 
         cooldownTimer = cooldownTime;
         isCoolingDown = true;
-    }
-
-    Vector3 CalculateFireDirection(string tag)
-    {
-        GameObject target = FindClosestTargetWithTag(tag);
-        if (target != null)
-        {
-            return (target.transform.position - spawnPoint.position).normalized;
-        }
-        else
-        {
-            return Vector3.forward;
-        }
     }
 
     GameObject FindClosestTargetWithTag(string tag)

@@ -12,10 +12,6 @@ public class PistolEnemy : MonoBehaviour
     public LineRenderer bulletLine;
     public LayerMask shootableLayer;
 
-    private AudioSource audioSource;
-    public AudioClip ShootSound;
-
-    public float bulletSpeed;
     public float bulletLineDuration;
 
     public bool stopFire;
@@ -23,7 +19,6 @@ public class PistolEnemy : MonoBehaviour
     void Start()
     {
         player = GameObject.Find("PlayerModel").transform;
-        audioSource = this.gameObject.GetComponent<AudioSource>();
     }
 
     void Update()
@@ -33,11 +28,7 @@ public class PistolEnemy : MonoBehaviour
 
     public void Fire()
     {
-        if (audioSource && ShootSound)
-        {
-            audioSource.clip = ShootSound;
-            audioSource.Play();
-        }
+        GetComponent<AudioSource>().Play();
 
         StartCoroutine(PlayMuzzleFlash());
         DisplayLine();

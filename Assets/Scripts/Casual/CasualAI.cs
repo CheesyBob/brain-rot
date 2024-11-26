@@ -7,7 +7,6 @@ public class CasualAI : MonoBehaviour
 {
     public float currentHealth;
     public float detectionRadius;
-    public float chaseSpeed;
     private float rotationYOffset = -90;
 
     [Header("Casual Type")]
@@ -148,18 +147,27 @@ public class CasualAI : MonoBehaviour
         {
             if (col.gameObject.CompareTag("PlayerModel"))
             {
-                playerDetected = true;
-                if (player == null || player != col.gameObject)
+                Vector3 directionToPlayer = col.transform.position - transform.position;
+                Vector3 rayOrigin = transform.position + Vector3.up * 1.0f;
+                float distanceToPlayer = directionToPlayer.magnitude;
+
+                if (!Physics.Raycast(rayOrigin, directionToPlayer.normalized, distanceToPlayer, LayerMask.GetMask("Wall")))
                 {
-                    player = col.gameObject;
-                    PlayerDetectedClips();
+                    playerDetected = true;
+
+                    if (!hasPlayedPlayerClips)
+                    {
+                        player = col.gameObject;
+                        PlayerDetectedClips();
+                    }
                 }
             }
         }
 
-        if (!playerDetected && player != null)
+        if (!playerDetected)
         {
             player = null;
+            hasPlayedPlayerClips = false;
         }
     }
 

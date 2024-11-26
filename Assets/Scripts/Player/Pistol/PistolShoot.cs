@@ -28,9 +28,9 @@ public class PistolShoot : MonoBehaviour
     public float bulletSpread;
     public float bulletDamageAmount;
     private int removeModifier = 2;
+    public bool useAmmo;
     public int currentAmmo;
     public bool ableToShoot;
-    public bool useAmmo;
     public Vector3 distanceFromGun;
 
     private void Start()
@@ -65,11 +65,11 @@ public class PistolShoot : MonoBehaviour
 
     public void Shoot()
     {
-        if (ableToShoot && useAmmo)
+        if ((!useAmmo || ableToShoot))
         {
             Vector3 startPoint = GetGunEndPosition();
             Vector3 endPoint = GetMouseWorldPosition();
-            
+
             endPoint.y = startPoint.y;
 
             StartCoroutine("PlayMuzzleFlash");
@@ -79,7 +79,10 @@ public class PistolShoot : MonoBehaviour
             DisplayLine(startPoint, endPoint);
             ShootBullets(startPoint, endPoint);
 
-            RemoveAmmo();
+            if (useAmmo)
+            {
+                RemoveAmmo();
+            }
         }
         else
         {
@@ -181,15 +184,21 @@ public class PistolShoot : MonoBehaviour
 
     private void AmmoCheck()
     {
-        if (currentAmmo >= 0)
+        if (useAmmo)
+        {
+            if (currentAmmo > 0)
+            {
+                ableToShoot = true;
+            }
+            else
+            {
+                ammoText.text = "0";
+                ableToShoot = false;
+            }
+        }
+        else
         {
             ableToShoot = true;
-        }
-        if (currentAmmo <= 0)
-        {
-            ammoText.text = "0";
-
-            ableToShoot = false;
         }
     }
 }
