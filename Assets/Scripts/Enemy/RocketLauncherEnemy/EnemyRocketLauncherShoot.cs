@@ -5,20 +5,10 @@ using UnityEngine;
 public class EnemyRocketLauncherShoot : MonoBehaviour
 {
     public GameObject rocket;
-
     public Transform spawnPoint;
-
-    public LayerMask shootableLayer;
-
-    public AudioClip rocketFireSound;
-
-    public float radius;
-
-    public int damageAmount;
-
     public float cooldownTime;
-    private float cooldownTimer = 0f;
 
+    private float cooldownTimer = 0f;
     private bool isCoolingDown = false;
     public bool stopFire;
 
@@ -40,42 +30,58 @@ public class EnemyRocketLauncherShoot : MonoBehaviour
 
     public void FireRocket()
     {
-        if(isCoolingDown){
-            return;
-        }
-
-        if(stopFire){
+        if (isCoolingDown || stopFire)
+        {
             return;
         }
 
         GameObject newObject = Instantiate(rocket, spawnPoint.position, Quaternion.identity);
 
-        Vector3 fireDirection = CalculateFireDirection();
+        Vector3 fireDirectionCasual = CalculateFireDirection("Casual");
 
-        newObject.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        if (fireDirectionCasual == Vector3.forward)
+        {
+            fireDirectionCasual = CalculateFireDirection("PlayerModel");
+        }
 
-        newObject.GetComponent<Rigidbody>().velocity = fireDirection * 18f;
+        newObject.transform.rotation = Quaternion.LookRotation(fireDirectionCasual);
 
-        newObject.GetComponent<AudioSource>().PlayOneShot(rocketFireSound);
+        newObject.GetComponent<Rigidbody>().velocity = fireDirectionCasual.normalized * 18f;
+
+        GetComponent<AudioSource>().Play();
 
         cooldownTimer = cooldownTime;
         isCoolingDown = true;
     }
 
-    Vector3 CalculateFireDirection()
+    Vector3 CalculateFireDirection(string tag)
     {
-        RaycastHit hit;
-        Vector3 fireDirection;
-
-        if (Physics.Raycast(spawnPoint.position, GameObject.Find("PlayerModel").transform.position - spawnPoint.position, out hit, shootableLayer))
+        GameObject target = FindClosestTargetWithTag(tag);
+        if (target != null)
         {
-            fireDirection = (hit.point - spawnPoint.position).normalized;
+            return (target.transform.position - spawnPoint.position).normalized;
         }
         else
         {
-            fireDirection = (GameObject.Find("PlayerModel").transform.position - spawnPoint.position).normalized;
+            return Vector3.forward;
         }
+    }
 
-        return fireDirection;
+    GameObject FindClosestTargetWithTag(string tag)
+    {
+        GameObject[] targets = GameObject.FindGameObjectsWithTag(tag);
+        GameObject closestTarget = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (GameObject target in targets)
+        {
+            float distance = Vector3.Distance(spawnPoint.position, target.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTarget = target;
+            }
+        }
+        return closestTarget;
     }
 }

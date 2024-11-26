@@ -4,86 +4,64 @@ using UnityEngine;
 
 public class PistolEnemy : MonoBehaviour
 {
+    private Transform player;
     public GameObject muzzleFlash;
     public GameObject bulletPrefab;
-
-    private Transform player;
-    public GameObject muzzlePoint;
-
+    public Transform muzzlePoint;
+    
     public LineRenderer bulletLine;
     public LayerMask shootableLayer;
 
     private AudioSource audioSource;
+    public AudioClip ShootSound;
 
     public float bulletSpeed;
     public float bulletLineDuration;
 
-    public float cooldownTime;
-    private float cooldownTimer = 0f;
-    private bool isCoolingDown = false;
     public bool stopFire;
 
-    void Start(){
+    void Start()
+    {
         player = GameObject.Find("PlayerModel").transform;
+        audioSource = this.gameObject.GetComponent<AudioSource>();
     }
 
     void Update()
     {
-        if (isCoolingDown)
-        {
-            if (cooldownTimer <= 0f)
-            {
-                isCoolingDown = false;
-                cooldownTimer = 0f;
-            }
-            else
-            {
-                cooldownTimer -= Time.deltaTime;
-            }
-        }
         UpdateBulletLine();
     }
 
-    public void FirePistol()
+    public void Fire()
     {
-        if(isCoolingDown){
-            return;
+        if (audioSource && ShootSound)
+        {
+            audioSource.clip = ShootSound;
+            audioSource.Play();
         }
 
-        if(stopFire){
-            return;
-        }
-
-        Vector3 fireDirection = CalculateFireDirection();
-
-        GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.transform.position, Quaternion.identity);
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-
-        rb.velocity = fireDirection * bulletSpeed;
-        Destroy(bullet, 1f);
-
-        GetComponent<AudioSource>().Play();
-
-        StartCoroutine("PlayMuzzleFlash");
+        StartCoroutine(PlayMuzzleFlash());
         DisplayLine();
     }
 
-    public void DisplayLine(){
-        bulletLine.enabled = true;
-        
-        Vector3 fireDirection = CalculateFireDirection();
+    public void DisplayLine()
+    {
+        if (bulletLine != null)
+        {
+            bulletLine.enabled = true;
+            Vector3 fireDirection = CalculateFireDirection();
 
-        if(Physics.Raycast(muzzlePoint.transform.position, fireDirection, out RaycastHit hit, shootableLayer)){
-            bulletLine.SetPosition(1, hit.point);
+            RaycastHit hit;
+            if (Physics.Raycast(muzzlePoint.position, fireDirection, out hit, Mathf.Infinity, shootableLayer))
+            {
+                bulletLine.SetPosition(1, hit.point);
+            }
+            else
+            {
+                bulletLine.SetPosition(1, muzzlePoint.position + fireDirection * 100f);
+            }
+
+            StartCoroutine(HideLineAfterDuration());
         }
-        else{
-            bulletLine.SetPosition(1, player.position);
-        }
-
-        StartCoroutine(HideLineAfterDuration());
-
-        cooldownTimer = cooldownTime;
-        isCoolingDown = true;
     }
 
     Vector3 CalculateFireDirection()
@@ -91,31 +69,36 @@ public class PistolEnemy : MonoBehaviour
         RaycastHit hit;
         Vector3 fireDirection;
 
-        if (Physics.Raycast(muzzlePoint.transform.position, player.position - muzzlePoint.transform.position, out hit, shootableLayer))
+        if (Physics.Raycast(muzzlePoint.position, player.position - muzzlePoint.position, out hit, shootableLayer))
         {
-            fireDirection = (hit.point - muzzlePoint.transform.position).normalized;
+            fireDirection = (hit.point - muzzlePoint.position).normalized;
         }
         else
         {
-            fireDirection = (player.position - muzzlePoint.transform.position).normalized;
+            fireDirection = (player.position - muzzlePoint.position).normalized;
         }
 
         return fireDirection;
     }
 
-    void UpdateBulletLine(){
-        bulletLine.SetPosition(0, muzzlePoint.transform.position);
+    void UpdateBulletLine()
+    {
+        bulletLine.SetPosition(0, muzzlePoint.position);
     }
 
-    IEnumerator HideLineAfterDuration(){
+    IEnumerator HideLineAfterDuration()
+    {
         yield return new WaitForSeconds(bulletLineDuration);
         bulletLine.enabled = false;
     }
 
     IEnumerator PlayMuzzleFlash()
     {
-        muzzleFlash.gameObject.SetActive(true);
-        yield return new WaitForSeconds(0.05f);
-        muzzleFlash.gameObject.SetActive(false);
+        if (muzzleFlash != null)
+        {
+            muzzleFlash.SetActive(true);
+            yield return new WaitForSeconds(0.05f);
+            muzzleFlash.SetActive(false);
+        }
     }
 }

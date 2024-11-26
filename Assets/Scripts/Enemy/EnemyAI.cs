@@ -7,10 +7,10 @@ public class EnemyAI : MonoBehaviour
     private UnityEngine.AI.NavMeshAgent navMeshAgent;
 
     public GameObject Pistol;
-    public GameObject Shotgun;
     public GameObject RocketLauncher;
 
     private GameObject player;
+    private GameObject casualTarget;
 
     private Vector3 roamPosition;
 
@@ -20,19 +20,25 @@ public class EnemyAI : MonoBehaviour
     public float roamInterval;
     private float nextRoamTime;
 
-    private bool isChasingPlayer = false;
+    private bool isChasingTarget = false;
 
     public bool canShoot;
     public bool EnemyPistol;
-    public bool EnemyShotgun;
     public bool EnemyRocketLauncher;
+    public float bulletSpread;
+    public float bulletMultiplier;
 
     private AudioSource audioSource;
     private float audioTimer;
     private float audioDelay = 5f;
+    public float fireRate = 0.5f;
+    private float nextFireTime = 0f;
+
     public AudioClip[] spottedPlayerAudioClips;
 
     private LayerMask wallLayer;
+
+    private float rotationYOffset = -90;
 
     void Start()
     {
@@ -40,6 +46,7 @@ public class EnemyAI : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
 
         player = GameObject.FindGameObjectWithTag("PlayerModel");
+        casualTarget = GameObject.FindGameObjectWithTag("Casual");
         audioTimer = audioDelay;
 
         wallLayer = LayerMask.GetMask("Wall");
@@ -55,11 +62,20 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-
-        if (distanceToPlayer <= chaseRange && CanSeePlayer())
+        if (casualTarget == null)
         {
-            isChasingPlayer = true;
+            casualTarget = player;
+        }
+
+        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        float distanceToCasual = Vector3.Distance(transform.position, casualTarget.transform.position);
+
+        bool canSeePlayer = CanSeeTarget(player, distanceToPlayer);
+        bool canSeeCasual = CanSeeTarget(casualTarget, distanceToCasual);
+
+        if ((canSeePlayer && distanceToPlayer <= chaseRange) || (canSeeCasual && distanceToCasual <= chaseRange))
+        {
+            isChasingTarget = true;
             EnableShooting();
 
             if (audioTimer <= 0)
@@ -72,21 +88,28 @@ public class EnemyAI : MonoBehaviour
                 audioTimer -= Time.deltaTime;
             }
 
-            ChasePlayer();
+            if (canSeePlayer)
+                ChaseTarget(player);
+            else
+                ChaseTarget(casualTarget);
         }
         else
         {
-            isChasingPlayer = false;
+            isChasingTarget = false;
             DisableShooting();
             Roam();
         }
 
-        if (player.GetComponent<HealthStatus>().dead)
-        {
-            canShoot = false;
-        }
-
         UpdateAnimationState();
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("PlayerBullet") && currentHealth > 0f)
+        {
+            currentHealth -= other.GetComponent<PistolBullet>().damageAmount;
+            currentHealth = Mathf.Max(currentHealth, 0);
+        }
     }
 
     void HandleDeath()
@@ -98,8 +121,6 @@ public class EnemyAI : MonoBehaviour
     {
         if (EnemyPistol)
             Pistol.GetComponent<PistolEnemy>().stopFire = false;
-        if (EnemyShotgun)
-            Shotgun.GetComponent<ShotgunEnemy>().stopFire = false;
         if (EnemyRocketLauncher)
             RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().stopFire = false;
     }
@@ -108,20 +129,17 @@ public class EnemyAI : MonoBehaviour
     {
         if (EnemyPistol)
             Pistol.GetComponent<PistolEnemy>().stopFire = true;
-        if (EnemyShotgun)
-            Shotgun.GetComponent<ShotgunEnemy>().stopFire = true;
         if (EnemyRocketLauncher)
             RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().stopFire = true;
     }
 
-    bool CanSeePlayer()
+    bool CanSeeTarget(GameObject target, float distanceToTarget)
     {
-        Vector3 directionToPlayer = player.transform.position - transform.position;
-        float distanceToPlayer = directionToPlayer.magnitude;
+        Vector3 directionToTarget = target.transform.position - transform.position;
 
         RaycastHit hit;
 
-        if (Physics.SphereCast(transform.position, 0.5f, directionToPlayer, out hit, distanceToPlayer, wallLayer))
+        if (Physics.SphereCast(transform.position, 0.5f, directionToTarget, out hit, distanceToTarget, wallLayer))
         {
             if (hit.collider.CompareTag("Wall"))
             {
@@ -131,34 +149,65 @@ public class EnemyAI : MonoBehaviour
         return true;
     }
 
-
-    void ChasePlayer()
+    void ChaseTarget(GameObject target)
     {
-        navMeshAgent.SetDestination(player.transform.position);
+        navMeshAgent.SetDestination(target.transform.position);
 
-        Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
-        
-        if (directionToPlayer != Vector3.zero)
+        RotateTowardsEnemy(target);
+
+        if (canShoot && CanSeeTarget(target, Vector3.Distance(transform.position, target.transform.position)))
         {
-            Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer) * Quaternion.Euler(0, -90, 0);
-
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 360 * Time.deltaTime);
-        }
-
-        if (canShoot && CanSeePlayer())
-        {
-            ShootAtPlayer();
+            ShootAtTarget(target);
         }
     }
 
-    void ShootAtPlayer()
+    void ShootWithSpread(GameObject bulletPrefab, Transform firePoint, GameObject target)
     {
-        if (EnemyPistol && canShoot)
-            Pistol.GetComponent<PistolEnemy>().FirePistol();
-        if (EnemyShotgun && canShoot)
-            Shotgun.GetComponent<ShotgunEnemy>().FireShotgun();
-        if (EnemyRocketLauncher && canShoot)
-            StartCoroutine(FireRocketDelay());
+        int totalBullets = (int)bulletMultiplier;
+        totalBullets = Mathf.Max(totalBullets, 1);
+
+        for (int i = 0; i < totalBullets; i++)
+        {
+            Vector3 spread = Vector3.zero;
+
+            if (totalBullets > 1)
+            {
+                spread = new Vector3(
+                    Random.Range(-bulletSpread, bulletSpread),
+                    Random.Range(-bulletSpread, bulletSpread),
+                    Random.Range(-bulletSpread, bulletSpread)
+                );
+            }
+
+            Vector3 direction = (target.transform.position - firePoint.position).normalized + spread;
+
+            Quaternion bulletRotation = Quaternion.LookRotation(direction);
+
+            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, bulletRotation);
+        }
+    }
+
+
+    void ShootAtTarget(GameObject target)
+    {
+        if (canShoot && Time.time >= nextFireTime)
+        {
+            if (EnemyPistol)
+            {
+                Transform pistolFirePoint = Pistol.GetComponent<PistolEnemy>().muzzlePoint.gameObject.transform;
+                GameObject bulletPrefab = Pistol.GetComponent<PistolEnemy>().bulletPrefab;
+
+                ShootWithSpread(bulletPrefab, pistolFirePoint, target);
+                Pistol.GetComponent<PistolEnemy>().Fire();
+            }
+
+            if (EnemyRocketLauncher)
+            {
+                StartCoroutine(FireRocketDelay());
+            }
+
+            nextFireTime = Time.time + fireRate;
+        }
     }
 
     void Roam()
@@ -170,6 +219,8 @@ public class EnemyAI : MonoBehaviour
         }
 
         navMeshAgent.SetDestination(roamPosition);
+
+        RotateTowardsRoamTarget();
     }
 
     void SetRandomRoamPosition()
@@ -203,12 +254,23 @@ public class EnemyAI : MonoBehaviour
         GetComponent<Animator>().SetBool("isRunning", navMeshAgent.velocity.magnitude > 0);
     }
 
-    void OnTriggerEnter(Collider other)
+    void RotateTowardsEnemy(GameObject target)
     {
-        if (other.CompareTag("PlayerBullet") && currentHealth > 0f)
-        {
-            currentHealth -= other.GetComponent<PistolBullet>().damageAmount;
-            currentHealth = Mathf.Max(currentHealth, 0);
-        }
+        Vector3 directionToEnemy = target.transform.position - transform.position;
+        directionToEnemy.y = 0f;
+
+        Quaternion targetRotation = Quaternion.LookRotation(directionToEnemy);
+        targetRotation *= Quaternion.Euler(0, rotationYOffset, 0);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+    }
+
+    void RotateTowardsRoamTarget()
+    {
+        Vector3 directionToTarget = roamPosition - transform.position;
+        directionToTarget.y = 0f;
+
+        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+        targetRotation *= Quaternion.Euler(0, rotationYOffset, 0);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
     }
 }

@@ -48,14 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 452d64c55765e6b47915144e3d2b9824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHitSounds:
-  - {fileID: 8300000, guid: 798fd38311dd3a54ab14a375d30bf0d6, type: 3}
-  - {fileID: 8300000, guid: 5f41b7d12bd3884459be1487f80476b0, type: 3}
-  - {fileID: 8300000, guid: 70a5a62505caba341ac77c5b24fc11d6, type: 3}
-  - {fileID: 8300000, guid: dc5a8c6c79128bc43abf846149960bed, type: 3}
-  - {fileID: 8300000, guid: c8fcd1d63e41d674e8caf7777cf7ec51, type: 3}
-  - {fileID: 8300000, guid: 5b632465207626343a0cec034fe04ad1, type: 3}
-  damageAmount: 5
+  BulletSpeed: 50
 --- !u!33 &6072612038741128277
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -125,7 +118,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 12, y: 12, z: 12}
+  m_Size: {x: 14, y: 14, z: 14}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &-1434020274142683024
 Rigidbody:
@@ -146,7 +139,7 @@ Rigidbody:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 513
+    m_Bits: 512
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1

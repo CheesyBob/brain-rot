@@ -43,10 +43,6 @@ public class PlayerRocket : MonoBehaviour
             Explode();
         }
 
-        if(other.gameObject.tag == "Casual"){
-            Explode();
-        }
-
         if(other.gameObject.tag == "Sentry"){
             other.gameObject.GetComponent<SentryShoot>().Explode();
             Explode();

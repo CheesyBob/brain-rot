@@ -28,6 +28,10 @@ public class EnemyRocket : MonoBehaviour
             Explode();
         }
 
+        if(other.gameObject.tag == "Casual"){
+            Explode();
+        }
+
         if(other.gameObject.tag == "Barrel"){
             other.gameObject.GetComponent<BarrelExplode>().Explode();
 
@@ -41,6 +45,12 @@ public class EnemyRocket : MonoBehaviour
         foreach (Collider col in playerColliders){
             if(col.CompareTag("PlayerModel")){
                 col.GetComponent<HealthStatus>().DamagePlayer(50);
+            }
+        }
+
+        foreach (Collider col in playerColliders){
+            if(col.CompareTag("Casual")){
+                col.GetComponent<EnemyDeath>().dead = true;
             }
         }
 

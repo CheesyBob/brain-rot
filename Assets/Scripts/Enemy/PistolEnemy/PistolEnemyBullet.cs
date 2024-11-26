@@ -1,26 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 public class PistolEnemyBullet : MonoBehaviour
 {
-    private GameObject PainPannel;
+    public float BulletSpeed;
 
-    private TextMeshProUGUI healthText;
+    void Start()
+    {
+        Rigidbody rb = GetComponent<Rigidbody>();
 
-    void Start(){
-        healthText = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
-        PainPannel = GameObject.Find("PainPannel");
+        rb.velocity = Vector3.zero;
+        rb.velocity = transform.forward * BulletSpeed;
+
+        Destroy(gameObject, 2f);
     }
 
-    void OnTriggerEnter(Collider other){
-        if(other.CompareTag("PlayerModel")){
-            other.GetComponent<HealthStatus>().DamagePlayer(3);
-
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("PlayerModel"))
+        {
+            other.GetComponent<HealthStatus>()?.DamagePlayer(3);
             Destroy(gameObject);
         }
-        if(other.CompareTag("Wall")){
+        else if (other.CompareTag("Wall") || other.CompareTag("Casual"))
+        {
             Destroy(gameObject);
         }
     }

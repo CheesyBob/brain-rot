@@ -8,6 +8,9 @@ public class PistolShoot : MonoBehaviour
 {
     public GameObject muzzleFlash;
     public GameObject bulletPrefab;
+    public TextMeshProUGUI ammoText;
+
+    public AudioClip noAmmoSound;
 
     private Camera mainCamera;
 
@@ -21,6 +24,13 @@ public class PistolShoot : MonoBehaviour
     public float lineDuration;
     private float nextFireTime;
 
+    public float bulletMultiplier;
+    public float bulletSpread;
+    public float bulletDamageAmount;
+    private int removeModifier = 2;
+    public int currentAmmo;
+    public bool ableToShoot;
+    public bool useAmmo;
     public Vector3 distanceFromGun;
 
     private void Start()
@@ -45,21 +55,36 @@ public class PistolShoot : MonoBehaviour
             
             nextFireTime = Time.time + fireRate;
         }
+
+        if (int.TryParse(ammoText.text, out currentAmmo))
+        {
+            UpdateText();
+        }
+        AmmoCheck();
     }
 
     public void Shoot()
     {
-        Vector3 startPoint = GetGunEndPosition();
-        Vector3 endPoint = GetMouseWorldPosition();
-        
-        endPoint.y = startPoint.y;
+        if (ableToShoot && useAmmo)
+        {
+            Vector3 startPoint = GetGunEndPosition();
+            Vector3 endPoint = GetMouseWorldPosition();
+            
+            endPoint.y = startPoint.y;
 
-        StartCoroutine("PlayMuzzleFlash");
+            StartCoroutine("PlayMuzzleFlash");
 
-        GetComponent<AudioSource>().Play();
+            GetComponent<AudioSource>().Play();
 
-        DisplayLine(startPoint, endPoint);
-        ShootBullet(startPoint, endPoint);
+            DisplayLine(startPoint, endPoint);
+            ShootBullets(startPoint, endPoint);
+
+            RemoveAmmo();
+        }
+        else
+        {
+            GetComponent<AudioSource>().PlayOneShot(noAmmoSound);
+        }
     }
 
     IEnumerator PlayMuzzleFlash()
@@ -116,18 +141,55 @@ public class PistolShoot : MonoBehaviour
         return mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distanceFromGun.z));
     }
 
-    private void ShootBullet(Vector3 start, Vector3 end)
+    private void ShootBullets(Vector3 start, Vector3 end)
     {
-        GameObject bullet = Instantiate(bulletPrefab, start, Quaternion.identity);
         Vector3 direction = (end - start).normalized;
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
-        rb.velocity = direction * bulletSpeed;
+        for (int i = 0; i < bulletMultiplier; i++)
+        {
+            Vector3 randomizedDirection = Quaternion.Euler(
+                Random.Range(-bulletSpread, bulletSpread),
+                Random.Range(-bulletSpread, bulletSpread),
+                0
+            ) * direction;
 
-        GetComponent<AudioSource>().Play();
+            GameObject bullet = Instantiate(bulletPrefab, start, Quaternion.identity);
+            Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
-        Ray ray = new Ray(start, direction);
+            bullet.GetComponent<PistolBullet>().damageAmount = bulletDamageAmount;
 
-        Destroy(bullet, bulletDuration);
+            rb.velocity = randomizedDirection * bulletSpeed;
+
+            Destroy(bullet, bulletDuration);
+        }
+    }
+
+    private void UpdateText()
+    {
+        ammoText.text = currentAmmo.ToString();
+    }
+
+    private void RemoveAmmo()
+    {
+        if (currentAmmo >= 0)
+        {
+            currentAmmo -= removeModifier;
+
+            UpdateText();
+        }
+    }
+
+    private void AmmoCheck()
+    {
+        if (currentAmmo >= 0)
+        {
+            ableToShoot = true;
+        }
+        if (currentAmmo <= 0)
+        {
+            ammoText.text = "0";
+
+            ableToShoot = false;
+        }
     }
 }

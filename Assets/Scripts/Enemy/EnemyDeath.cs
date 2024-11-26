@@ -14,12 +14,8 @@ public class EnemyDeath : MonoBehaviour
     public bool casual;
     private bool hasPlayed = false;
 
-    public AudioClip[] deathAudioClips;
-    private AudioSource audioSource;
-
     void Awake(){
         navMeshAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        audioSource = GetComponent<AudioSource>();
 
         EnemyRagdoll.SetActive(false);
     }
@@ -31,8 +27,6 @@ public class EnemyDeath : MonoBehaviour
     }
 
     public void Death(){
-        DeathAudioClips();
-
         EnemyRagdoll.SetActive(true);
         EnemyRagdoll.transform.SetParent(null);
         EnemyRagdoll.GetComponent<Rigidbody>().AddForce(transform.forward * ragdollForce, ForceMode.Impulse);
@@ -44,17 +38,9 @@ public class EnemyDeath : MonoBehaviour
         if(!casual){
             GetComponent<EnemyAI>().canShoot = false;
         }
-    }
 
-    void DeathAudioClips()
-    {
-        if (deathAudioClips.Length > 0 && !hasPlayed)
-        {
-            int randomIndex = Random.Range(0, deathAudioClips.Length);
-
-            audioSource.PlayOneShot(deathAudioClips[randomIndex]);
-
-            hasPlayed = true;
-        }
+        EnemyRagdoll.GetComponent<EnemyDeathSounds>().enabled = true;
+        
+        Destroy(gameObject);
     }
 }
