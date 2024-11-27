@@ -26,6 +26,7 @@ public class CasualAI : MonoBehaviour
     public AudioClip[] killClips;
 
     private bool hasPlayedPlayerClips = false;
+    private bool playerDetectedOnce = false;
     public float roamRadius;
     public float roamSpeed;
     private Vector3 randomRoamTarget;
@@ -41,11 +42,15 @@ public class CasualAI : MonoBehaviour
 
     void Update()
     {
-        if(currentHealth == 0f){
+        if (currentHealth == 0f)
+        {
             GetComponent<EnemyDeath>().dead = true;
         }
 
-        DetectPlayer();
+        if (!playerDetectedOnce)
+        {
+            DetectPlayer();
+        }
 
         if (targetEnemy == null)
         {
@@ -64,7 +69,7 @@ public class CasualAI : MonoBehaviour
             }
         }
 
-        if (player != null && Vector3.Distance(transform.position, player.transform.position) <= detectionRadius)
+        if (playerDetectedOnce && player != null)
         {
             FollowPlayer();
             FindNearestEnemy();
@@ -81,7 +86,8 @@ public class CasualAI : MonoBehaviour
                         pistol.FirePistol();
                         UpdateAnimationState();
                     }
-                    if (casualRocketlauncher && HasLineOfSight(targetEnemy.transform)){
+                    if (casualRocketlauncher && HasLineOfSight(targetEnemy.transform))
+                    {
                         rocketLauncher.FireRocket();
                     }
                 }
@@ -141,8 +147,6 @@ public class CasualAI : MonoBehaviour
     void DetectPlayer()
     {
         Collider[] players = Physics.OverlapSphere(transform.position, detectionRadius);
-        bool playerDetected = false;
-
         foreach (Collider col in players)
         {
             if (col.gameObject.CompareTag("PlayerModel"))
@@ -153,18 +157,15 @@ public class CasualAI : MonoBehaviour
 
                 if (!Physics.Raycast(rayOrigin, directionToPlayer.normalized, distanceToPlayer, LayerMask.GetMask("Wall")))
                 {
-                    playerDetected = true;
-
-                    if (!hasPlayedPlayerClips)
-                    {
-                        player = col.gameObject;
-                        PlayerDetectedClips();
-                    }
+                    player = col.gameObject;
+                    playerDetectedOnce = true;
+                    PlayerDetectedClips();
+                    return;
                 }
             }
         }
 
-        if (!playerDetected)
+        if (!playerDetectedOnce)
         {
             player = null;
             hasPlayedPlayerClips = false;
