@@ -4822,6 +4822,15 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 1ccd623df930fc64ebb8e87b76808310, type: 3}
   - {fileID: 8300000, guid: 6c003e662479e8f4a884cdc5dba5a8d7, type: 3}
   - {fileID: 8300000, guid: 107b6c6d74d25f942acca8933ca2b1aa, type: 3}
+  - {fileID: 8300000, guid: 996bb21aaef66a6469556850a63f6ab2, type: 3}
+  - {fileID: 8300000, guid: f3f0418fa61e95d43a99a914fe59e1b3, type: 3}
+  - {fileID: 8300000, guid: 4730bec0cefcdb14aad68684a2772dde, type: 3}
+  - {fileID: 8300000, guid: 108b95bab1cee8645b5f5adbdca2de1e, type: 3}
+  - {fileID: 8300000, guid: e6eb2c019479ee249be78f866fe98752, type: 3}
+  - {fileID: 8300000, guid: 053b78a6b2bfd244c8e29fac52a7c5af, type: 3}
+  - {fileID: 8300000, guid: c91fbb17c83dffb4d82fd4cddd6d49a5, type: 3}
+  - {fileID: 8300000, guid: ab441fcd301fae549bb3dfcf5b61f42f, type: 3}
+  - {fileID: 8300000, guid: 28a3f639e67a62c43b958abb314383af, type: 3}
   killClips:
   - {fileID: 8300000, guid: 67834207cc69dc7438cc93121bd7f563, type: 3}
   - {fileID: 8300000, guid: 441848da70789ec4482de2d4d5d74a5c, type: 3}
@@ -4831,6 +4840,16 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 82ae988e5a221954c88a285a959ef293, type: 3}
   - {fileID: 8300000, guid: fc4b4864e695bc14a81e3c1c5c95e095, type: 3}
   - {fileID: 8300000, guid: 9e7c475d8ebcb6c49b0f233d62653c79, type: 3}
+  - {fileID: 8300000, guid: e1801fc2fc935c24791a167c94f6ef75, type: 3}
+  - {fileID: 8300000, guid: 9a888f6ba962d2540a3d444008d57a8a, type: 3}
+  - {fileID: 8300000, guid: 0b9c395c85b5dfb428382c80da450cef, type: 3}
+  - {fileID: 8300000, guid: 66bf4a61db6336d4aa7c9e5caf359214, type: 3}
+  - {fileID: 8300000, guid: 98bd4da32e6908c41882a171298747b1, type: 3}
+  - {fileID: 8300000, guid: 9aa3c48dabf38f94387644534755feb7, type: 3}
+  - {fileID: 8300000, guid: 143b8f3c58b1efe4f86013b1d62e1e11, type: 3}
+  - {fileID: 8300000, guid: 6f471bac7d6eefb48beabdd490f27f0a, type: 3}
+  - {fileID: 8300000, guid: 9f4ea840864d15a4aabdeb679fe5d6f7, type: 3}
+  - {fileID: 8300000, guid: b060c36d725d0b34bbd4b9e3c8269a85, type: 3}
   roamRadius: 30
   roamSpeed: 3
 --- !u!114 &1018315019372411167
