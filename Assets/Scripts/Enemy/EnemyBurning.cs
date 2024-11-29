@@ -43,7 +43,7 @@ public class EnemyBurning : MonoBehaviour
 
             if (!casual)
             {
-                GetComponent<EnemyAI>().enabled = false;
+                GetComponent<EnemyAI>().chaseRange = 0;
                 GetComponent<Animator>().SetBool("isBurning", true);
             }
 
@@ -73,25 +73,16 @@ public class EnemyBurning : MonoBehaviour
         if (!casual && GetComponent<EnemyAI>().currentHealth > 0)
         {
             GetComponent<EnemyAI>().currentHealth -= healthDecreaseRate * Time.deltaTime;
-            
-            if (GetComponent<EnemyAI>().currentHealth <= 0)
-            {
-                GetComponent<EnemyAI>().currentHealth = 0;
-                GetComponent<EnemyDeath>().dead = true;
-                BurningParticles.GetComponent<ParticleSystem>().Stop();
-            }
         }
 
         if (casual && GetComponent<CasualAI>().currentHealth > 0)
         {
             GetComponent<CasualAI>().currentHealth -= healthDecreaseRate * Time.deltaTime;
+        }
 
-            if (GetComponent<CasualAI>().currentHealth <= 0)
-            {
-                GetComponent<CasualAI>().currentHealth = 0;
-                GetComponent<EnemyDeath>().dead = true;
-                BurningParticles.GetComponent<ParticleSystem>().Stop();
-            }
+        if (GetComponent<EnemyDeath>().dead)
+        {
+            BurningParticles.GetComponent<ParticleSystem>().Stop();
         }
     }
 

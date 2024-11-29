@@ -62,6 +62,11 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
+        if(currentHealth == 0f){
+            HandleDeath();
+            return;
+        }
+
         if (casualTarget == null)
         {
             casualTarget = player;
@@ -125,7 +130,7 @@ public class EnemyAI : MonoBehaviour
             RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().stopFire = false;
     }
 
-    void DisableShooting()
+    public void DisableShooting()
     {
         if (EnemyPistol)
             Pistol.GetComponent<PistolEnemy>().stopFire = true;
