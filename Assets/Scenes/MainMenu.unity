@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -306,7 +305,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 11c4b9ac51c03bf4785e9c308363c478, type: 2}
   m_sharedMaterial: {fileID: -1745129673903972404, guid: 11c4b9ac51c03bf4785e9c308363c478, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: -1745129673903972404, guid: 11c4b9ac51c03bf4785e9c308363c478, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -440,7 +440,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5db6f745ef63c774c823e8b0885758c3, type: 2}
   m_sharedMaterial: {fileID: 7695267579511422929, guid: 5db6f745ef63c774c823e8b0885758c3, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 7695267579511422929, guid: 5db6f745ef63c774c823e8b0885758c3, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -574,7 +575,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 11c4b9ac51c03bf4785e9c308363c478, type: 2}
   m_sharedMaterial: {fileID: -1745129673903972404, guid: 11c4b9ac51c03bf4785e9c308363c478, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: -1745129673903972404, guid: 11c4b9ac51c03bf4785e9c308363c478, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -708,7 +710,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5db6f745ef63c774c823e8b0885758c3, type: 2}
   m_sharedMaterial: {fileID: 7695267579511422929, guid: 5db6f745ef63c774c823e8b0885758c3, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 7695267579511422929, guid: 5db6f745ef63c774c823e8b0885758c3, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:

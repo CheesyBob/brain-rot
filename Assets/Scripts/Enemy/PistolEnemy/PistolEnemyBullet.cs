@@ -13,7 +13,7 @@ public class PistolEnemyBullet : MonoBehaviour
         rb.velocity = Vector3.zero;
         rb.velocity = transform.forward * BulletSpeed;
 
-        Destroy(gameObject, 2f);
+        Destroy(gameObject, 5f);
     }
 
     void OnTriggerEnter(Collider other)

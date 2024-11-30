@@ -14275,7 +14275,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: e823cd5b5d27c0f4b8256e7c12ee3e6d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -33898,8 +33898,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08f2c93ac24b6f54cbab9cf3db6ac5e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHitSounds:
-  - {fileID: 8300000, guid: ff80690eabda9294fb71e28398c249da, type: 3}
   radius: 4
   damageAmount: 40
 --- !u!54 &5545662070552832318
