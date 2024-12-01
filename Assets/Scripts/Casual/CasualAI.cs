@@ -42,9 +42,15 @@ public class CasualAI : MonoBehaviour
 
     void Update()
     {
-        if (currentHealth == 0f)
+        if (currentHealth <= 0f)
         {
-            GetComponent<EnemyDeath>().dead = true;
+            HandleDeath();
+            return;
+        }
+
+        if(currentHealth == 0f){
+            HandleDeath();
+            return;
         }
 
         if (!playerDetectedOnce)
@@ -124,6 +130,11 @@ public class CasualAI : MonoBehaviour
                 RoamAround();
             }
         }
+    }
+
+    void HandleDeath()
+    {
+        GetComponent<EnemyDeath>().dead = true;
     }
 
     void OnTriggerEnter(Collider other){

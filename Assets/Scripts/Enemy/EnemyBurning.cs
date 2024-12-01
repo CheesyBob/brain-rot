@@ -49,7 +49,7 @@ public class EnemyBurning : MonoBehaviour
 
             if (casual)
             {
-                GetComponent<CasualAI>().enabled = false;
+                GetComponent<CasualAI>().detectionRadius = 0;
                 GetComponent<Animator>().SetBool("isBurning", true);
             }
 
