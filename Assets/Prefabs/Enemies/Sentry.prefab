@@ -34361,7 +34361,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 203bb0d6a216749408cd98c9e85887a1, type: 3}
   sentryExplode: {fileID: 8300000, guid: 325dfe7d29ac6be4ca3ee825c75475c0, type: 3}
   sentryHealth: 100
-  detectRadius: 22
+  detectRadius: 18
   rotationSpeed: 5
   playerBulletDamage: 20
   cooldownDuration: 0.5

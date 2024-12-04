@@ -14,7 +14,7 @@ public class ChangeCargoMaterialColor : MonoBehaviour
 
         foreach (GameObject obj in allObjects)
         {
-            if(obj.name == "Cargo")
+            if (obj.name == "Cargo")
             {
                 cargos.Add(obj);
             }
@@ -22,11 +22,12 @@ public class ChangeCargoMaterialColor : MonoBehaviour
 
         List<Color> usedColors = new List<Color>();
 
-        foreach(GameObject cargo in cargos)
+        foreach (GameObject cargo in cargos)
         {
             Renderer cargoRenderer = cargo.GetComponent<Renderer>();
             Material cargoMaterial = cargoRenderer.material;
             Color randomColor;
+
             do
             {
                 randomColor = new Color(
@@ -34,15 +35,12 @@ public class ChangeCargoMaterialColor : MonoBehaviour
                     Random.Range(0.0f, maxBrightness),
                     Random.Range(0.0f, maxBrightness)
                 );
-            } 
-            while(usedColors.Contains(randomColor));
-
-            usedColors.Add(randomColor);
-
-            if(cargoMaterial.HasProperty("_TintColor"))
-            {
-                cargoMaterial.SetColor("_TintColor", randomColor);
             }
+                while (usedColors.Contains(randomColor));
+
+                usedColors.Add(randomColor);
+
+                cargoMaterial.SetColor("_BaseColor", randomColor);
         }
     }
 }
