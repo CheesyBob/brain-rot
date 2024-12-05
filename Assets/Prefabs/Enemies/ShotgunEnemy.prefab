@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 4263306534183436674}
   - component: {fileID: 6029547756348797391}
   - component: {fileID: 7231304601421957920}
+  - component: {fileID: 8310656462822199801}
   - component: {fileID: 8646449457882377921}
   - component: {fileID: 3140117071356600271}
   - component: {fileID: 6520436313763972975}
@@ -131,11 +132,14 @@ MonoBehaviour:
   bulletMultiplier: 2
   fireRate: 0.5
   spottedPlayerAudioClips:
-  - {fileID: 8300000, guid: 0b58dd64bcf65e94aa886097a1829d58, type: 3}
-  - {fileID: 8300000, guid: 9d02508f08633ee44b7886a4ffef0a64, type: 3}
-  - {fileID: 8300000, guid: d74a2aad840e1664595483ab5f3186cb, type: 3}
-  - {fileID: 8300000, guid: 9db32528b51b2b34a8d5ac17ea0917ec, type: 3}
-  - {fileID: 8300000, guid: fba02351dc3e7334f8d7a904c133c0c7, type: 3}
+  - {fileID: 8300000, guid: 5728691cb19d82c4c90c4cc971e99aaa, type: 3}
+  - {fileID: 8300000, guid: 5b51420f0f868be469836875227412ba, type: 3}
+  - {fileID: 8300000, guid: c03d52996e60d4547b635771c98be7de, type: 3}
+  - {fileID: 8300000, guid: 7e08ae6ad70f76b43916977efb61bd58, type: 3}
+  - {fileID: 8300000, guid: 7ce102c59a1a81a42b72d7d07514526d, type: 3}
+  - {fileID: 8300000, guid: 052f03b0c9ec59b49aeac5e7186850b6, type: 3}
+  - {fileID: 8300000, guid: 075ee04dad565a24e94c2f0f045c1b96, type: 3}
+  - {fileID: 8300000, guid: eced5b356af5aa1499a36fa61f443dea, type: 3}
 --- !u!114 &6029547756348797391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,13 +171,32 @@ MonoBehaviour:
   BurningParticles: {fileID: 6219239648340017241}
   igniteSound: {fileID: 8300000, guid: bbfd262d40ef30c44a3e0be87519d4b5, type: 3}
   burningVoiceLines:
-  - {fileID: 8300000, guid: 63da418de1f5b374782eb7847eda661d, type: 3}
+  - {fileID: 8300000, guid: e3ee5be09bbad0c4987e315a28b35a9b, type: 3}
+  - {fileID: 8300000, guid: b0d004376a59a78418ad4efac3799bb4, type: 3}
+  - {fileID: 8300000, guid: bda52de8c104a844b94f0c07af88d70c, type: 3}
+  - {fileID: 8300000, guid: 416f488df5342684491ff8821e4d23df, type: 3}
+  - {fileID: 8300000, guid: 73bdfb22e77e37c4eb932515b9f6714b, type: 3}
   fadeDuration: 6
   healthDecreaseRate: 20
   casual: 0
   additionalSkinnedRenderers:
   - {fileID: 164023702113782536}
   - {fileID: 9055328826069133365}
+--- !u!114 &8310656462822199801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3331496569923938531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c94c5d05874f7894fb0032f6968af54e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skinnedMeshRenderers:
+  - {fileID: 9055328826069133365}
+  - {fileID: 164023702113782536}
 --- !u!195 &8646449457882377921
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -287,7 +310,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 0
-  MinDistance: 40
+  MinDistance: 100
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
@@ -11450,8 +11473,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deathAudioClips:
-  - {fileID: 8300000, guid: 789e9c7b167207d4abfb3e235c31d603, type: 3}
-  - {fileID: 8300000, guid: 09d29a3122f348247b326de54e047d0b, type: 3}
+  - {fileID: 8300000, guid: 007ba1039c4f8c542b4a97b357f85af3, type: 3}
+  - {fileID: 8300000, guid: ea159db7d258a734a8f5b00bffb1e7b6, type: 3}
+  - {fileID: 8300000, guid: f8002f129ad8ca347ad678f8355964ee, type: 3}
+  - {fileID: 8300000, guid: 3da1d1dd28ae764479e2ddf798d21a8e, type: 3}
+  - {fileID: 8300000, guid: 11d4d7291ff2b9f46bc22b816280b2cb, type: 3}
+  - {fileID: 8300000, guid: b4c6e256d6ab21947bbf9d3e6944bb94, type: 3}
 --- !u!54 &7489687767708626052
 Rigidbody:
   m_ObjectHideFlags: 0

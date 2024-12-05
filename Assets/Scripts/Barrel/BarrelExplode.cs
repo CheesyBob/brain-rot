@@ -44,8 +44,8 @@ public class BarrelExplode : MonoBehaviour
         if(!hasExploded){
             hasExploded = true;
             
-            Collider[] colliders = Physics.OverlapSphere(transform.position, 5, LayerMask.GetMask("Enemy", "Casual"));
-            Collider[] playerColliders = Physics.OverlapSphere(transform.position, 5);
+            Collider[] colliders = Physics.OverlapSphere(transform.position, 3, LayerMask.GetMask("Enemy", "Casual"));
+            Collider[] playerColliders = Physics.OverlapSphere(transform.position, 3);
 
             foreach (Collider col in colliders){
                 float distance = Vector3.Distance(transform.position, col.transform.position);

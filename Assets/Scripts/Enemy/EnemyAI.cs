@@ -25,12 +25,11 @@ public class EnemyAI : MonoBehaviour
     public bool canShoot;
     public bool EnemyPistol;
     public bool EnemyRocketLauncher;
+    private bool canPlayPlayerSpottedClips = true;
     public float bulletSpread;
     public float bulletMultiplier;
 
     private AudioSource audioSource;
-    private float audioTimer;
-    private float audioDelay = 5f;
     public float fireRate = 0.5f;
     private float nextFireTime = 0f;
 
@@ -47,7 +46,6 @@ public class EnemyAI : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("PlayerModel");
         casualTarget = GameObject.FindGameObjectWithTag("Casual");
-        audioTimer = audioDelay;
 
         wallLayer = LayerMask.GetMask("Wall");
 
@@ -82,16 +80,7 @@ public class EnemyAI : MonoBehaviour
         {
             isChasingTarget = true;
             EnableShooting();
-
-            if (audioTimer <= 0)
-            {
-                PlayRandomAudioClip();
-                audioTimer = audioDelay;
-            }
-            else
-            {
-                audioTimer -= Time.deltaTime;
-            }
+            PlayRandomAudioClip();
 
             if (canSeePlayer)
                 ChaseTarget(player);
@@ -247,11 +236,20 @@ public class EnemyAI : MonoBehaviour
 
     void PlayRandomAudioClip()
     {
-        if (spottedPlayerAudioClips.Length > 0 && audioSource != null && !audioSource.isPlaying && !GetComponent<EnemyDeath>().dead)
+        if (spottedPlayerAudioClips.Length > 0 && !audioSource.isPlaying && !GetComponent<EnemyDeath>().dead && canPlayPlayerSpottedClips)
         {
+            canPlayPlayerSpottedClips = false;
+
             int randomIndex = Random.Range(0, spottedPlayerAudioClips.Length);
             audioSource.PlayOneShot(spottedPlayerAudioClips[randomIndex]);
+
+            StartCoroutine("PlayerSpottedCooldown");
         }
+    }
+
+    IEnumerator PlayerSpottedCooldown(){
+        yield return new WaitForSeconds(2);
+        canPlayPlayerSpottedClips = true;
     }
 
     void UpdateAnimationState()

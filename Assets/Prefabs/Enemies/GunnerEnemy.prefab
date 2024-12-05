@@ -262,8 +262,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deathAudioClips:
-  - {fileID: 8300000, guid: 65b3bfa811d9aaf4893ccbfc99e73f0a, type: 3}
-  - {fileID: 8300000, guid: 8e091334733266544ac661c5cf1f339f, type: 3}
+  - {fileID: 8300000, guid: e7291526158171c49adb12d6faf67bc1, type: 3}
+  - {fileID: 8300000, guid: 838f5ad3d0dc49245b0c6175ffd27078, type: 3}
+  - {fileID: 8300000, guid: e487c9e2394b8174b9da53660c05a305, type: 3}
+  - {fileID: 8300000, guid: 68ee0e764aec21c4c9b8245fd921b3fb, type: 3}
+  - {fileID: 8300000, guid: 0320ad3f2f3b23f4b997d65d5c09ee61, type: 3}
+  - {fileID: 8300000, guid: 37d8a12075396f94ca5409bf64b552af, type: 3}
+  - {fileID: 8300000, guid: 4325af59ed3cd804eb7f01a3af0be313, type: 3}
+  - {fileID: 8300000, guid: 373a5d8be0dd37a4683200854f89e180, type: 3}
+  - {fileID: 8300000, guid: 9f2c320fd5184114496ba58501d55701, type: 3}
+  - {fileID: 8300000, guid: 5e0befb3051f5a44e8f78e6bd945aa15, type: 3}
 --- !u!54 &2010732550494452090
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5543,8 +5551,6 @@ MonoBehaviour:
   shootableLayer:
     serializedVersion: 2
     m_Bits: 200
-  ShootSound: {fileID: 0}
-  bulletSpeed: 100
   bulletLineDuration: 0.05
   stopFire: 0
 --- !u!82 &3836695385285480554
@@ -11363,6 +11369,7 @@ GameObject:
   - component: {fileID: 6177825506612109813}
   - component: {fileID: 601940132973071261}
   - component: {fileID: 3223517071310786073}
+  - component: {fileID: 4016725230973713037}
   - component: {fileID: 6219201140348229259}
   - component: {fileID: 5225807482894717176}
   - component: {fileID: 8410047060373844077}
@@ -11420,11 +11427,16 @@ MonoBehaviour:
   bulletMultiplier: 0
   fireRate: 0.5
   spottedPlayerAudioClips:
-  - {fileID: 8300000, guid: d64815504c327e74db97f334c06a739c, type: 3}
-  - {fileID: 8300000, guid: d5d3da3d44c4f8944b65c99452a558ae, type: 3}
-  - {fileID: 8300000, guid: 702d04ae4b985ab43918983c10371792, type: 3}
-  - {fileID: 8300000, guid: ad1aa542cea3ec04a986a72dcb02652a, type: 3}
-  - {fileID: 8300000, guid: c677bcbab3be8a8438c4484f9cdb1406, type: 3}
+  - {fileID: 8300000, guid: fddc9d36db7521e429822467de8485a5, type: 3}
+  - {fileID: 8300000, guid: 7332762e38a2c2f4ba8277fed80b4f13, type: 3}
+  - {fileID: 8300000, guid: 56173f68c9339f24b804299ba769259c, type: 3}
+  - {fileID: 8300000, guid: 18cae1b8a6e827343a743219b93998ad, type: 3}
+  - {fileID: 8300000, guid: 133c93e5b31efbb46b9b5da7730fb3f1, type: 3}
+  - {fileID: 8300000, guid: 342b674c6d2b02c47bc34dc1318c6f8f, type: 3}
+  - {fileID: 8300000, guid: 637044fb961f7ae49b4ea57d753f077d, type: 3}
+  - {fileID: 8300000, guid: a16fee42f4bb29b4a8f0cb3937bcb16a, type: 3}
+  - {fileID: 8300000, guid: 873d55708cb81e144ab68ee9b5e38944, type: 3}
+  - {fileID: 8300000, guid: dde9267baefaf494992051b9b75b9cfe, type: 3}
 --- !u!114 &601940132973071261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11456,13 +11468,33 @@ MonoBehaviour:
   BurningParticles: {fileID: 787433598166023283}
   igniteSound: {fileID: 8300000, guid: bbfd262d40ef30c44a3e0be87519d4b5, type: 3}
   burningVoiceLines:
-  - {fileID: 8300000, guid: 63da418de1f5b374782eb7847eda661d, type: 3}
+  - {fileID: 8300000, guid: 0ec6195be96e3a9468ddc3b1e70472a8, type: 3}
+  - {fileID: 8300000, guid: a857f988cdfa8b341bb57e6fcde72f8a, type: 3}
+  - {fileID: 8300000, guid: 2797ff12ab47f5e429850591b696fb9e, type: 3}
+  - {fileID: 8300000, guid: ae4396672caaf0a46b50c703063d0ce1, type: 3}
+  - {fileID: 8300000, guid: e5c23464f71365c4b812d4ea1f4335d7, type: 3}
+  - {fileID: 8300000, guid: 5b1eb13d555daeb4d8efc4711e4f5315, type: 3}
   fadeDuration: 6
   healthDecreaseRate: 20
   casual: 0
   additionalSkinnedRenderers:
   - {fileID: 4535758615711924945}
   - {fileID: 5747489253690954730}
+--- !u!114 &4016725230973713037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8843946163718562489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c94c5d05874f7894fb0032f6968af54e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skinnedMeshRenderers:
+  - {fileID: 5747489253690954730}
+  - {fileID: 4535758615711924945}
 --- !u!195 &6219201140348229259
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -11576,7 +11608,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 0
-  MinDistance: 40
+  MinDistance: 100
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0

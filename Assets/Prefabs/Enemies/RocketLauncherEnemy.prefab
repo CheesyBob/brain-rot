@@ -4952,10 +4952,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deathAudioClips:
-  - {fileID: 8300000, guid: 8027d34ce5f422749941d9f0699244c2, type: 3}
-  - {fileID: 8300000, guid: 987cc83ee78d9fc4abd0dc474e44ad66, type: 3}
-  - {fileID: 8300000, guid: f408c2e2d2254914aa0b92654705fd2a, type: 3}
-  - {fileID: 8300000, guid: f784ec1ef4ca4a2429a43898afe05f76, type: 3}
+  - {fileID: 8300000, guid: c0e1507f0e3d8744a81f20db3a382faa, type: 3}
+  - {fileID: 8300000, guid: 3afb5cae03063b043936f20605314061, type: 3}
+  - {fileID: 8300000, guid: 2b6cf11f86980a44db36e2ae97cd6c59, type: 3}
+  - {fileID: 8300000, guid: 7c4a7d7d279e69148bdf24ffbdb6e7da, type: 3}
+  - {fileID: 8300000, guid: 3d8c9ad6ca52a524fae69e23a779e8e0, type: 3}
+  - {fileID: 8300000, guid: c3ad16fb23652fc43a2e20abf71f008d, type: 3}
+  - {fileID: 8300000, guid: 211c8d617d62272419621048ac8e7950, type: 3}
+  - {fileID: 8300000, guid: a258fa3e58f692143bee43fb8d155af3, type: 3}
+  - {fileID: 8300000, guid: 2258b0d5ec2fcb44c8704d6c595ecd67, type: 3}
 --- !u!54 &6187671283002768129
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -10575,6 +10580,7 @@ GameObject:
   - component: {fileID: 1359519701955075878}
   - component: {fileID: 8285939767087943222}
   - component: {fileID: 4823364492740705124}
+  - component: {fileID: 1709644197954249693}
   - component: {fileID: 8249402295486303529}
   - component: {fileID: 8480814878189796475}
   - component: {fileID: 6959030013786804307}
@@ -10632,14 +10638,12 @@ MonoBehaviour:
   bulletMultiplier: 0
   fireRate: 0.5
   spottedPlayerAudioClips:
-  - {fileID: 8300000, guid: de636c0771a093048a5ef593847b3728, type: 3}
-  - {fileID: 8300000, guid: 354d4368ef3f689459f11ae7362e4a74, type: 3}
-  - {fileID: 8300000, guid: b7fad29e91c60d34b9934b0f3e5bae54, type: 3}
-  - {fileID: 8300000, guid: 0d12ce23d010cf04dad55bbc3ecad88d, type: 3}
-  - {fileID: 8300000, guid: 87757f03501365641827cbc5a20e6ace, type: 3}
-  - {fileID: 8300000, guid: 5e66b26c36453944785945d9998207ad, type: 3}
-  - {fileID: 8300000, guid: 8421974d868fad741b34a4677df01ebd, type: 3}
-  - {fileID: 8300000, guid: 54aa9964f7e098b41953354999eb27ef, type: 3}
+  - {fileID: 8300000, guid: 3f0052e3dd1364849985db0e21201883, type: 3}
+  - {fileID: 8300000, guid: 79f284b786ab9d04ca0701be571b21a0, type: 3}
+  - {fileID: 8300000, guid: 5879de7e96467a445b9172a01528836d, type: 3}
+  - {fileID: 8300000, guid: ae287b49345c27547be92e208b37a734, type: 3}
+  - {fileID: 8300000, guid: a6b739dbfe733ce498963ef0eefdaf2d, type: 3}
+  - {fileID: 8300000, guid: efdb6d0af6f041b41b8efba78de1a613, type: 3}
 --- !u!114 &8285939767087943222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10671,13 +10675,32 @@ MonoBehaviour:
   BurningParticles: {fileID: 5037156879989317431}
   igniteSound: {fileID: 8300000, guid: bbfd262d40ef30c44a3e0be87519d4b5, type: 3}
   burningVoiceLines:
-  - {fileID: 8300000, guid: 63da418de1f5b374782eb7847eda661d, type: 3}
+  - {fileID: 8300000, guid: 142e27da0c863c7479c8d2bdb8c4cecc, type: 3}
+  - {fileID: 8300000, guid: 10ea38f47c5fbb449839b97cdcddab27, type: 3}
+  - {fileID: 8300000, guid: 24b3c776638d69f4b8c8ef59ffb09229, type: 3}
+  - {fileID: 8300000, guid: ad6a5cbf8def59f4d8e1a800ebcefe2a, type: 3}
+  - {fileID: 8300000, guid: 72c4890322309f544b6e334a55dac875, type: 3}
   fadeDuration: 6
   healthDecreaseRate: 20
   casual: 0
   additionalSkinnedRenderers:
   - {fileID: 3080352001299042615}
   - {fileID: 3810714315477518719}
+--- !u!114 &1709644197954249693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7639204273022451738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c94c5d05874f7894fb0032f6968af54e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skinnedMeshRenderers:
+  - {fileID: 3810714315477518719}
+  - {fileID: 3080352001299042615}
 --- !u!195 &8249402295486303529
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -10791,7 +10814,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 0
-  MinDistance: 40
+  MinDistance: 100
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0

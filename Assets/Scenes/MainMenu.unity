@@ -6204,7 +6204,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 5.65, y: -4.600006}
+  m_AnchoredPosition: {x: 5.6497803, y: -0.60004425}
   m_SizeDelta: {x: 310, y: 310}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &406037708
@@ -7993,14 +7993,14 @@ RectTransform:
   m_LocalScale: {x: 1.2163532, y: 1.2163533, z: 0.6081766}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 406037707}
   - {fileID: 1472827770}
+  - {fileID: 406037707}
   m_Father: {fileID: 1820140724}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 150, y: 260}
-  m_SizeDelta: {x: 130, y: 130}
+  m_SizeDelta: {x: 122, y: 122}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &846460154
 MonoBehaviour:
@@ -10736,14 +10736,14 @@ RectTransform:
   m_GameObject: {fileID: 1472827766}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalScale: {x: 0.49999997, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 846460153}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 189.3999, y: 46.8}
+  m_AnchoredPosition: {x: 189.3999, y: 50.799934}
   m_SizeDelta: {x: 387.6, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1491430467
@@ -10938,9 +10938,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You are equiped with 6 weapons. Use them to defeat the gun weilding zombies.
-    You aren't alone in this mission there are casuals that aid you. Ammo and heath
-    kits are scattered on the map.
+  m_text: You are equiped with 6 weapons. Use them to defeat the enemies. You aren't
+    alone in this mission there are casuals that aid you. Ammo and heath kits are
+    scattered on the map.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 11c4b9ac51c03bf4785e9c308363c478, type: 2}
   m_sharedMaterial: {fileID: -1745129673903972404, guid: 11c4b9ac51c03bf4785e9c308363c478, type: 2}
