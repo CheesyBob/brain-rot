@@ -49,14 +49,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c52d34f9aad62d4fae660ec8365107c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHitSounds:
-  - {fileID: 8300000, guid: 798fd38311dd3a54ab14a375d30bf0d6, type: 3}
-  - {fileID: 8300000, guid: 5f41b7d12bd3884459be1487f80476b0, type: 3}
-  - {fileID: 8300000, guid: 70a5a62505caba341ac77c5b24fc11d6, type: 3}
-  - {fileID: 8300000, guid: dc5a8c6c79128bc43abf846149960bed, type: 3}
-  - {fileID: 8300000, guid: c8fcd1d63e41d674e8caf7777cf7ec51, type: 3}
-  - {fileID: 8300000, guid: 5b632465207626343a0cec034fe04ad1, type: 3}
-  damageAmount: 5
 --- !u!33 &6446011725825411163
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -153,7 +145,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 4
   m_CollisionDetection: 2
 --- !u!82 &1826707959029627913
 AudioSource:
