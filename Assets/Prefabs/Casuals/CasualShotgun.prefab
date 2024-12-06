@@ -11562,7 +11562,7 @@ MonoBehaviour:
   cooldownTime: 0.5
   bulletMultiplier: 2
   bulletSpread: 0.1
-  bulletDamageAmount: 30
+  bulletDamageAmount: 20
 --- !u!82 &7595723498683093535
 AudioSource:
   m_ObjectHideFlags: 0

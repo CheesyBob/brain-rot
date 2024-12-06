@@ -2,86 +2,99 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class HostileCounter : MonoBehaviour
 {
-    private GameObject Player;
-
-    private string Enemies = "Enemy";
-
-    private TextMeshProUGUI HostileCounterText;
-
     private int startingEnemyCount;
     private int enemyCount;
 
-    void Start(){
-        Player = GameObject.Find("PlayerModel");
+    private GameObject[] levelTriggers;
+    private GameObject[] exitArrows;
 
-        HostileCounterText = GetComponent<TextMeshProUGUI>();
-    }
-
-    void Update(){
-        if(Player.GetComponent<HealthStatus>().dead){
-            PlayerSubtractCount();
-        }
-        else{
-            UpdateStartingCount();
-            UpdateCount();
-        }
-    }
-
-    void UpdateStartingCount()
+    void Start()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag(Enemies);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        InitializeReferences();
+    }
+
+    void Update()
+    {
+        UpdateEnemyCount();
+
+        if (enemyCount <= 3)
+        {
+            SetTriggersAndArrows(true);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        InitializeReferences();
+    }
+
+    private void InitializeReferences()
+    {
+        levelTriggers = GameObject.FindGameObjectsWithTag("LevelTrigger");
+        exitArrows = GameObject.FindGameObjectsWithTag("ExitArrow");
+
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         startingEnemyCount = enemies.Length;
+        enemyCount = startingEnemyCount;
+
+        UpdateHostileCounterText();
+        SetTriggersAndArrows(false);
     }
 
-    void UpdateCount()
+    private void UpdateEnemyCount()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag(Enemies);
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
-        GameObject[] levelTriggers = GameObject.FindGameObjectsWithTag("LevelTrigger");
-        GameObject[] exitArrows = GameObject.FindGameObjectsWithTag("ExitArrow");
+        enemyCount = 0;
 
-        enemyCount = enemies.Length;
-
-        HostileCounterText.text = "Hostiles: " + enemyCount;
-
-        foreach(GameObject enemy in enemies)
+        foreach (GameObject enemy in enemies)
         {
-            EnemyDeath component = enemy.GetComponent<EnemyDeath>();
-            
-            if(component.dead)
+            EnemyDeath enemyDeath = enemy.GetComponent<EnemyDeath>();
+            if (!enemyDeath.dead)
             {
-                SubtractCount(enemy);
+                enemyCount++;
             }
         }
 
-        if (enemyCount <= startingEnemyCount * 0.3f)
+        UpdateHostileCounterText();
+    }
+
+    private void UpdateHostileCounterText()
+    {
+        TextMeshProUGUI counterText = GetComponent<TextMeshProUGUI>();
+
+        counterText.text = $"Hostiles: {enemyCount}";
+    }
+
+    private void SetTriggersAndArrows(bool isActive)
+    {
+        foreach (GameObject trigger in levelTriggers)
         {
-            foreach (GameObject levelTrigger in levelTriggers)
-            {
-                levelTrigger.GetComponent<BoxCollider>().enabled = true;
-                levelTrigger.GetComponent<MeshRenderer>().enabled = true;
-            }
+            BoxCollider collider = trigger.GetComponent<BoxCollider>();
+            MeshRenderer renderer = trigger.GetComponent<MeshRenderer>();
 
-            foreach(GameObject exitArrow in exitArrows){
-                exitArrow.GetComponent<ExitArrow>().enabled = true;
-                exitArrow.GetComponent<MeshRenderer>().enabled = true;
-            }
+            collider.enabled = isActive;
+            renderer.enabled = isActive;
         }
-    }
 
-    void SubtractCount(GameObject enemy)
-    {
-        enemyCount--;
-        
-        HostileCounterText.text = "Hostiles: " + enemyCount;
-    }
+        foreach (GameObject arrow in exitArrows)
+        {
+            ExitArrow arrowComponent = arrow.GetComponent<ExitArrow>();
+            MeshRenderer renderer = arrow.GetComponent<MeshRenderer>();
 
-    void PlayerSubtractCount()
-    {
-        HostileCounterText.text = "Hostiles: 0";
+            arrowComponent.enabled = isActive;
+            renderer.enabled = isActive;
+        }
     }
 }
