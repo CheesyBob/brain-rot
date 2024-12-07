@@ -35447,8 +35447,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba47c3a55076ac243b0e454fb7656af4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minIntensity: 0
-  maxIntensity: 4.2
+  minIntensity: 15
+  maxIntensity: 20
   flickerSpeed: 5
 --- !u!1001 &1311679030
 PrefabInstance:
