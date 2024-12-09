@@ -34363,7 +34363,7 @@ MonoBehaviour:
   sentryHealth: 100
   detectRadius: 18
   rotationSpeed: 5
-  playerBulletDamage: 20
+  playerBulletDamage: 15
   cooldownDuration: 0.5
   bulletSpeed: 50
   dead: 0

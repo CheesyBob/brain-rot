@@ -36,26 +36,19 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleMovement()
     {
-        Vector3 mousePosition = Input.mousePosition;
-        mousePosition.z = Vector3.Distance(mainCamera.transform.position, transform.position);
-        Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
-
-        Vector3 directionToMouse = mouseWorldPosition - transform.position;
-        directionToMouse.y = 0f;
-
-        if (directionToMouse.magnitude > 0f)
-        {
-            Quaternion rotationToMouse = Quaternion.LookRotation(directionToMouse);
-            Quaternion offsetRotation = Quaternion.Euler(0f, -90f, 0f);
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotationToMouse * offsetRotation, 100f * Time.deltaTime);
-
-            transform.rotation = Quaternion.Euler(-90f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
-        }
-
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
-        Vector3 movement = new Vector3(horizontalInput, 0f, verticalInput).normalized;
+        Vector3 forward = mainCamera.transform.forward;
+        Vector3 right = mainCamera.transform.right;
+
+        forward.y = 0f;
+        right.y = 0f;
+
+        forward.Normalize();
+        right.Normalize();
+
+        Vector3 movement = forward * verticalInput + right * horizontalInput;
 
         if (GetComponent<PlayerBurn>().isBurning)
         {
@@ -72,6 +65,20 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             playerMoving = false;
+        }
+
+        Vector3 mousePosition = Input.mousePosition;
+        mousePosition.z = Vector3.Distance(mainCamera.transform.position, transform.position);
+        Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
+
+        Vector3 directionToMouse = mouseWorldPosition - transform.position;
+        directionToMouse.y = 0f;
+
+        if (directionToMouse.magnitude > 0f)
+        {
+            Quaternion rotationToMouse = Quaternion.LookRotation(directionToMouse);
+
+            transform.rotation = Quaternion.Euler(-90, rotationToMouse.eulerAngles.y, rotationToMouse.eulerAngles.z + -90);
         }
     }
 

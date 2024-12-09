@@ -22,7 +22,6 @@ public class EnemyAI : MonoBehaviour
 
     private bool isChasingTarget = false;
 
-    public bool canShoot;
     public bool EnemyPistol;
     public bool EnemyRocketLauncher;
     private bool canPlayPlayerSpottedClips = true;
@@ -30,14 +29,14 @@ public class EnemyAI : MonoBehaviour
     public float bulletMultiplier;
 
     private AudioSource audioSource;
-    public float fireRate = 0.5f;
-    private float nextFireTime = 0f;
 
     public AudioClip[] spottedPlayerAudioClips;
 
     private LayerMask wallLayer;
 
     private float rotationYOffset = -90;
+    private float fireRate = 0.5f;
+    private float lastFireTime = 0f;
 
     void Start()
     {
@@ -45,11 +44,11 @@ public class EnemyAI : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
 
         player = GameObject.FindGameObjectWithTag("PlayerModel");
-        casualTarget = GameObject.FindGameObjectWithTag("Casual");
 
         wallLayer = LayerMask.GetMask("Wall");
 
         SetRandomRoamPosition();
+        navMeshAgent.updateRotation = false;
     }
 
     void Update()
@@ -60,32 +59,29 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        if(currentHealth == 0f){
-            HandleDeath();
-            return;
-        }
+        UpdateCasualTargets();
 
-        if (casualTarget == null)
+        GameObject target = GetPriorityTarget();
+
+        if (target != null)
         {
-            casualTarget = player;
-        }
+            float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+            bool canSeeTarget = CanSeeTarget(target, distanceToTarget);
 
-        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-        float distanceToCasual = Vector3.Distance(transform.position, casualTarget.transform.position);
+            if (canSeeTarget && distanceToTarget <= chaseRange)
+            {
+                isChasingTarget = true;
+                EnableShooting();
+                PlayRandomAudioClip();
 
-        bool canSeePlayer = CanSeeTarget(player, distanceToPlayer);
-        bool canSeeCasual = CanSeeTarget(casualTarget, distanceToCasual);
-
-        if ((canSeePlayer && distanceToPlayer <= chaseRange) || (canSeeCasual && distanceToCasual <= chaseRange))
-        {
-            isChasingTarget = true;
-            EnableShooting();
-            PlayRandomAudioClip();
-
-            if (canSeePlayer)
-                ChaseTarget(player);
+                ChaseTarget(target);
+            }
             else
-                ChaseTarget(casualTarget);
+            {
+                isChasingTarget = false;
+                DisableShooting();
+                Roam();
+            }
         }
         else
         {
@@ -119,12 +115,59 @@ public class EnemyAI : MonoBehaviour
             RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().stopFire = false;
     }
 
-    public void DisableShooting()
+    void DisableShooting()
     {
         if (EnemyPistol)
             Pistol.GetComponent<PistolEnemy>().stopFire = true;
         if (EnemyRocketLauncher)
             RocketLauncher.GetComponent<EnemyRocketLauncherShoot>().stopFire = true;
+    }
+
+    void UpdateCasualTargets()
+    {
+        GameObject[] casuals = GameObject.FindGameObjectsWithTag("Casual");
+
+        if (casuals.Length > 0)
+        {
+            casualTarget = GetClosestTarget(casuals);
+        }
+        else
+        {
+            casualTarget = null;
+        }
+    }
+
+    GameObject GetClosestTarget(GameObject[] targets)
+    {
+        GameObject closest = null;
+        float minDistance = Mathf.Infinity;
+
+        foreach (GameObject target in targets)
+        {
+            float distance = Vector3.Distance(transform.position, target.transform.position);
+            if (distance < minDistance)
+            {
+                closest = target;
+                minDistance = distance;
+            }
+        }
+
+        return closest;
+    }
+
+    GameObject GetPriorityTarget()
+    {
+        if (casualTarget != null && Vector3.Distance(transform.position, casualTarget.transform.position) < chaseRange)
+        {
+            return casualTarget;
+        }
+
+        if (player != null && Vector3.Distance(transform.position, player.transform.position) < chaseRange)
+        {
+            return player;
+        }
+
+        return null;
     }
 
     bool CanSeeTarget(GameObject target, float distanceToTarget)
@@ -149,7 +192,7 @@ public class EnemyAI : MonoBehaviour
 
         RotateTowardsEnemy(target);
 
-        if (canShoot && CanSeeTarget(target, Vector3.Distance(transform.position, target.transform.position)))
+        if (CanSeeTarget(target, Vector3.Distance(transform.position, target.transform.position)))
         {
             ShootAtTarget(target);
         }
@@ -157,8 +200,12 @@ public class EnemyAI : MonoBehaviour
 
     void ShootWithSpread(GameObject bulletPrefab, Transform firePoint, GameObject target)
     {
+        // Check if enough time has passed since the last shot
+        if (Time.time - lastFireTime < fireRate)
+            return; // If not, return without firing
+
         int totalBullets = (int)bulletMultiplier;
-        totalBullets = Mathf.Max(totalBullets, 1);
+        totalBullets = Mathf.Max(totalBullets, 0);
 
         for (int i = 0; i < totalBullets; i++)
         {
@@ -174,33 +221,29 @@ public class EnemyAI : MonoBehaviour
             }
 
             Vector3 direction = (target.transform.position - firePoint.position).normalized + spread;
-
             Quaternion bulletRotation = Quaternion.LookRotation(direction);
-
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, bulletRotation);
+            Instantiate(bulletPrefab, firePoint.position, bulletRotation);
         }
-    }
 
+        // Update the last fire time after shooting
+        lastFireTime = Time.time;
+    }
 
     void ShootAtTarget(GameObject target)
     {
-        if (canShoot && Time.time >= nextFireTime)
+        if (EnemyPistol)
         {
-            if (EnemyPistol)
-            {
-                Transform pistolFirePoint = Pistol.GetComponent<PistolEnemy>().muzzlePoint.gameObject.transform;
-                GameObject bulletPrefab = Pistol.GetComponent<PistolEnemy>().bulletPrefab;
+            Transform pistolFirePoint = Pistol.GetComponent<PistolEnemy>().muzzlePoint;
+            GameObject bulletPrefab = Pistol.GetComponent<PistolEnemy>().bulletPrefab;
 
-                ShootWithSpread(bulletPrefab, pistolFirePoint, target);
-                Pistol.GetComponent<PistolEnemy>().Fire();
-            }
+            ShootWithSpread(bulletPrefab, pistolFirePoint, target);
 
-            if (EnemyRocketLauncher)
-            {
-                StartCoroutine(FireRocketDelay());
-            }
+            Pistol.GetComponent<PistolEnemy>().Fire();
+        }
 
-            nextFireTime = Time.time + fireRate;
+        if (EnemyRocketLauncher)
+        {
+            StartCoroutine(FireRocketDelay());
         }
     }
 
@@ -247,7 +290,8 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    IEnumerator PlayerSpottedCooldown(){
+    IEnumerator PlayerSpottedCooldown()
+    {
         yield return new WaitForSeconds(2);
         canPlayPlayerSpottedClips = true;
     }
@@ -264,7 +308,8 @@ public class EnemyAI : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(directionToEnemy);
         targetRotation *= Quaternion.Euler(0, rotationYOffset, 0);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * 360f);
     }
 
     void RotateTowardsRoamTarget()
@@ -274,6 +319,7 @@ public class EnemyAI : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
         targetRotation *= Quaternion.Euler(0, rotationYOffset, 0);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * 360f);
     }
 }

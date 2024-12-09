@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PistolEnemy : MonoBehaviour
@@ -8,51 +7,37 @@ public class PistolEnemy : MonoBehaviour
     public GameObject muzzleFlash;
     public GameObject bulletPrefab;
     public Transform muzzlePoint;
-    
-    public LineRenderer bulletLine;
+
     public LayerMask shootableLayer;
-
-    public float bulletLineDuration;
-
+    public float bulletSpeed = 50f;
     public bool stopFire;
+
+    public float fireRate;
+    private float lastFireTime = 0f;
 
     void Start()
     {
         player = GameObject.Find("PlayerModel").transform;
     }
 
-    void Update()
-    {
-        UpdateBulletLine();
-    }
-
     public void Fire()
     {
-        GetComponent<AudioSource>().Play();
-
-        StartCoroutine(PlayMuzzleFlash());
-        DisplayLine();
+        if (Time.time - lastFireTime >= fireRate)
+        {
+            lastFireTime = Time.time;
+            GetComponent<AudioSource>().Play();
+            StartCoroutine(PlayMuzzleFlash());
+            ShootBullet();
+        }
     }
 
-    public void DisplayLine()
+    void ShootBullet()
     {
-        if (bulletLine != null)
-        {
-            bulletLine.enabled = true;
-            Vector3 fireDirection = CalculateFireDirection();
-
-            RaycastHit hit;
-            if (Physics.Raycast(muzzlePoint.position, fireDirection, out hit, Mathf.Infinity, shootableLayer))
-            {
-                bulletLine.SetPosition(1, hit.point);
-            }
-            else
-            {
-                bulletLine.SetPosition(1, muzzlePoint.position + fireDirection * 100f);
-            }
-
-            StartCoroutine(HideLineAfterDuration());
-        }
+        GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, muzzlePoint.rotation);
+        Vector3 fireDirection = CalculateFireDirection();
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+ 
+        rb.velocity = fireDirection * bulletSpeed;
     }
 
     Vector3 CalculateFireDirection()
@@ -60,7 +45,7 @@ public class PistolEnemy : MonoBehaviour
         RaycastHit hit;
         Vector3 fireDirection;
 
-        if (Physics.Raycast(muzzlePoint.position, player.position - muzzlePoint.position, out hit, shootableLayer))
+        if (Physics.Raycast(muzzlePoint.position, player.position - muzzlePoint.position, out hit, Mathf.Infinity, shootableLayer))
         {
             fireDirection = (hit.point - muzzlePoint.position).normalized;
         }
@@ -70,17 +55,6 @@ public class PistolEnemy : MonoBehaviour
         }
 
         return fireDirection;
-    }
-
-    void UpdateBulletLine()
-    {
-        bulletLine.SetPosition(0, muzzlePoint.position);
-    }
-
-    IEnumerator HideLineAfterDuration()
-    {
-        yield return new WaitForSeconds(bulletLineDuration);
-        bulletLine.enabled = false;
     }
 
     IEnumerator PlayMuzzleFlash()

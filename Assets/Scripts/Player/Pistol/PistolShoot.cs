@@ -14,15 +14,14 @@ public class PistolShoot : MonoBehaviour
 
     private Camera mainCamera;
 
-    public LineRenderer bulletLine;
-
     public LayerMask shootableLayer;
+
+    public Transform bulletSpawnPoint;
+    public float yRotationOffset = 0f;
 
     public float fireRate;
     public float bulletSpeed;
     public float bulletDuration;
-    public float lineDuration;
-    private float nextFireTime;
 
     public float bulletMultiplier;
     public float bulletSpread;
@@ -31,20 +30,18 @@ public class PistolShoot : MonoBehaviour
     public bool useAmmo;
     public int currentAmmo;
     public bool ableToShoot;
-    public Vector3 distanceFromGun;
+
+    private float nextFireTime;
 
     private void Start()
     {
         muzzleFlash.SetActive(false);
-
-        bulletLine.enabled = false;
-
         mainCamera = DestroyClonedPlayer.Instance.playerCamera.GetComponent<Camera>();
     }
 
-    void OnEnable(){
+    void OnEnable()
+    {
         muzzleFlash.SetActive(false);
-        bulletLine.enabled = false;
     }
 
     private void Update()
@@ -52,7 +49,6 @@ public class PistolShoot : MonoBehaviour
         if (Input.GetButton("Fire1") && Time.time >= nextFireTime)
         {
             Shoot();
-            
             nextFireTime = Time.time + fireRate;
         }
 
@@ -67,18 +63,10 @@ public class PistolShoot : MonoBehaviour
     {
         if ((!useAmmo || ableToShoot))
         {
-            Vector3 startPoint = GetGunEndPosition();
-            Vector3 endPoint = GetMouseWorldPosition();
-
-            endPoint.y = startPoint.y;
-
-            StartCoroutine("PlayMuzzleFlash");
-
+            StartCoroutine(PlayMuzzleFlash());
             GetComponent<AudioSource>().Play();
-
-            DisplayLine(startPoint, endPoint);
-            ShootBullets(startPoint, endPoint);
-
+            SpawnBullets();
+            
             if (useAmmo)
             {
                 RemoveAmmo();
@@ -92,40 +80,45 @@ public class PistolShoot : MonoBehaviour
 
     IEnumerator PlayMuzzleFlash()
     {
-        muzzleFlash.gameObject.SetActive(true);
+        muzzleFlash.SetActive(true);
         yield return new WaitForSeconds(0.05f);
-        muzzleFlash.gameObject.SetActive(false);
+        muzzleFlash.SetActive(false);
     }
 
-    private void DisplayLine(Vector3 start, Vector3 end)
+    private void SpawnBullets()
     {
-        StartCoroutine(HideLineAfterDuration());
-        bulletLine.enabled = true;
-        bulletLine.SetPosition(0, start);
-
-        RaycastHit hit;
-
-        if (Physics.Raycast(start, (end - start).normalized, out hit, Vector3.Distance(start, end), shootableLayer))
+        for (int i = 0; i < bulletMultiplier; i++)
         {
-            bulletLine.SetPosition(1, hit.point);
-        }
-        else
-        {
-            bulletLine.SetPosition(1, end);
+            GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity);
+            bullet.GetComponent<PistolBullet>().damageAmount = bulletDamageAmount;
+
+            MoveTowardsMouseWithSpread(bullet);
+            Destroy(bullet, bulletDuration);
         }
     }
 
-    private IEnumerator HideLineAfterDuration()
+    private void MoveTowardsMouseWithSpread(GameObject bullet)
     {
-        yield return new WaitForSeconds(lineDuration);
-        bulletLine.enabled = false;
-    }
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
-    private Vector3 GetGunEndPosition()
-    {
-        Vector3 endPoint = transform.position + transform.forward * distanceFromGun.z + transform.right * distanceFromGun.x + transform.up * distanceFromGun.y;
+        Vector3 mousePosition = GetMouseWorldPosition();
+        Vector3 direction = mousePosition - bullet.transform.position;
 
-        return endPoint;
+        direction.y = 0f;
+        direction.Normalize();
+
+        Vector3 spreadDirection = direction + new Vector3(
+            Random.Range(-bulletSpread, bulletSpread),
+            0f,
+            Random.Range(-bulletSpread, bulletSpread)
+        );
+
+        spreadDirection.Normalize();
+
+        Quaternion targetRotation = Quaternion.LookRotation(new Vector3(spreadDirection.x, 0f, spreadDirection.z));
+        rb.MoveRotation(targetRotation);
+
+        rb.velocity = spreadDirection * bulletSpeed;
     }
 
     private Vector3 GetMouseWorldPosition()
@@ -133,38 +126,12 @@ public class PistolShoot : MonoBehaviour
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         Plane plane = new Plane(Vector3.up, transform.position);
 
-        float distance;
-
-        if (plane.Raycast(ray, out distance))
+        if (plane.Raycast(ray, out float distance))
         {
-            Vector3 hitPoint = ray.GetPoint(distance);
-            return hitPoint;
+            return ray.GetPoint(distance);
         }
 
-        return mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distanceFromGun.z));
-    }
-
-    private void ShootBullets(Vector3 start, Vector3 end)
-    {
-        Vector3 direction = (end - start).normalized;
-
-        for (int i = 0; i < bulletMultiplier; i++)
-        {
-            Vector3 randomizedDirection = Quaternion.Euler(
-                Random.Range(-bulletSpread, bulletSpread),
-                Random.Range(-bulletSpread, bulletSpread),
-                0
-            ) * direction;
-
-            GameObject bullet = Instantiate(bulletPrefab, start, Quaternion.identity);
-            Rigidbody rb = bullet.GetComponent<Rigidbody>();
-
-            bullet.GetComponent<PistolBullet>().damageAmount = bulletDamageAmount;
-
-            rb.velocity = randomizedDirection * bulletSpeed;
-
-            Destroy(bullet, bulletDuration);
-        }
+        return mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance));
     }
 
     private void UpdateText()
@@ -177,7 +144,6 @@ public class PistolShoot : MonoBehaviour
         if (currentAmmo >= 0)
         {
             currentAmmo -= removeModifier;
-
             UpdateText();
         }
     }
@@ -186,14 +152,10 @@ public class PistolShoot : MonoBehaviour
     {
         if (useAmmo)
         {
-            if (currentAmmo > 0)
-            {
-                ableToShoot = true;
-            }
-            else
+            ableToShoot = currentAmmo > 0;
+            if (currentAmmo <= 0)
             {
                 ammoText.text = "0";
-                ableToShoot = false;
             }
         }
         else

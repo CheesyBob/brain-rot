@@ -35,10 +35,6 @@ public class EnemyDeath : MonoBehaviour
 
         navMeshAgent.isStopped = true;
 
-        if(!casual){
-            GetComponent<EnemyAI>().canShoot = false;
-        }
-
         EnemyRagdoll.GetComponent<EnemyDeathSounds>().enabled = true;
         
         Destroy(gameObject);
