@@ -21,7 +21,10 @@ public class CasualPistol : MonoBehaviour
 
     void Update()
     {
-        targetEnemy = casualAI.targetEnemy;
+        if (casualAI != null)
+        {
+            targetEnemy = casualAI.targetEnemy;
+        }
 
         if (isCoolingDown)
         {
@@ -39,7 +42,7 @@ public class CasualPistol : MonoBehaviour
 
     public void FirePistol()
     {
-        if (!isCoolingDown)
+        if (!isCoolingDown && targetEnemy != null)
         {
             Vector3 fireDirection = (targetEnemy.transform.position - muzzlePoint.position).normalized;
 

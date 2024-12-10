@@ -48,11 +48,6 @@ public class CasualAI : MonoBehaviour
             return;
         }
 
-        if(currentHealth == 0f){
-            HandleDeath();
-            return;
-        }
-
         if (!playerDetectedOnce)
         {
             DetectPlayer();
@@ -69,7 +64,6 @@ public class CasualAI : MonoBehaviour
             if (enemyDeathScript != null && enemyDeathScript.dead)
             {
                 targetEnemy = null;
-
                 EnemyKillClips();
                 FindNearestEnemy();
             }
@@ -137,9 +131,12 @@ public class CasualAI : MonoBehaviour
         GetComponent<EnemyDeath>().dead = true;
     }
 
-    void OnTriggerEnter(Collider other){
-        if(other.gameObject.tag == "EnemyBullet"){
-            if(currentHealth >= 0f){
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "EnemyBullet")
+        {
+            if (currentHealth >= 0f)
+            {
                 currentHealth -= 5f;
                 currentHealth = Mathf.Max(currentHealth, 0);
             }
@@ -195,21 +192,26 @@ public class CasualAI : MonoBehaviour
 
     void FollowPlayer()
     {
-        agent.SetDestination(player.transform.position);
-
-        RotateTowardsPlayer();
-        UpdateAnimationState();
+        if (player != null)
+        {
+            agent.SetDestination(player.transform.position);
+            RotateTowardsPlayer();
+            UpdateAnimationState();
+        }
     }
 
     void RotateTowardsPlayer()
     {
-        Vector3 directionToPlayer = player.transform.position - transform.position;
-        directionToPlayer.y = 0f;
+        if (player != null)
+        {
+            Vector3 directionToPlayer = player.transform.position - transform.position;
+            directionToPlayer.y = 0f;
 
-        Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+            Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
 
-        targetRotation *= Quaternion.Euler(0, rotationYOffset, 0);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            targetRotation *= Quaternion.Euler(0, rotationYOffset, 0);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+        }
     }
 
     void RotateTowardsEnemy()
@@ -252,6 +254,8 @@ public class CasualAI : MonoBehaviour
 
     bool HasLineOfSight(Transform enemyTransform)
     {
+        if (enemyTransform == null) return false;
+
         Vector3 directionToEnemy = enemyTransform.position - transform.position;
         float distanceToEnemy = directionToEnemy.magnitude;
 

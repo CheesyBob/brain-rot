@@ -61,7 +61,6 @@ public class PlayerRocket : MonoBehaviour
 
     void Explode(){
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Enemy", "Casual"));
-        Collider[] playerColliders = Physics.OverlapSphere(transform.position, radius);
 
         foreach (Collider col in colliders){
             float distance = Vector3.Distance(transform.position, col.transform.position);
@@ -75,12 +74,6 @@ public class PlayerRocket : MonoBehaviour
                 if(col.CompareTag("Casual")){
                     col.GetComponent<CasualAI>().currentHealth -= 100f;
                 }
-            }
-        }
-
-        foreach (Collider col in playerColliders){
-            if(col.CompareTag("PlayerModel")){
-                col.GetComponent<HealthStatus>().DamagePlayer(50);
             }
         }
 

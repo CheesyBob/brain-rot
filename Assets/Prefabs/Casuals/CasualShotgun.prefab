@@ -11552,16 +11552,14 @@ MonoBehaviour:
   muzzleFlash: {fileID: 2107664257547672630}
   bulletPrefab: {fileID: 2089041227659820891, guid: 44d001e11900ecf498e4685e64db80d3, type: 3}
   muzzlePoint: {fileID: 5835418005131446660}
-  bulletLine: {fileID: 6206556105130330662}
   shootableLayer:
     serializedVersion: 2
     m_Bits: 640
   casualAI: {fileID: 2967131932494860677}
   bulletSpeed: 100
-  bulletLineDuration: 0.05
   cooldownTime: 0.5
   bulletMultiplier: 2
-  bulletSpread: 0.1
+  bulletSpread: 0.05
   bulletDamageAmount: 20
 --- !u!82 &7595723498683093535
 AudioSource:
