@@ -62,7 +62,12 @@ public class EnemyRocketLauncherShoot : MonoBehaviour
         }
 
         GameObject newObject = Instantiate(rocket, spawnPoint.position, Quaternion.identity);
-        newObject.transform.rotation = Quaternion.LookRotation(fireDirection);
+
+        Quaternion directionRotation = Quaternion.LookRotation(fireDirection);
+        Quaternion offsetRotation = Quaternion.Euler(90f, 0f, 0f);
+        
+        newObject.transform.rotation = directionRotation * offsetRotation;
+        
         newObject.GetComponent<Rigidbody>().velocity = fireDirection.normalized * 18f;
 
         GetComponent<AudioSource>().Play();

@@ -1,5 +1,102 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &148800497413699701
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 995280539066518760}
+  - component: {fileID: 6046453325074486381}
+  - component: {fileID: 1181654353911912119}
+  - component: {fileID: 8865622260742021514}
+  m_Layer: 10
+  m_Name: CasualOutline
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &995280539066518760
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148800497413699701}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 0, z: 2}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5915100788596765533}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6046453325074486381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148800497413699701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8a06059703ca4f4681d7ef741929cb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetTransform: {fileID: 783179270520996972}
+--- !u!23 &1181654353911912119
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148800497413699701}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a1b4a73f347e0e845bd57fc1509ba6fa, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &8865622260742021514
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148800497413699701}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &159288898838836892
 GameObject:
   m_ObjectHideFlags: 0
@@ -4791,6 +4888,7 @@ Transform:
   m_LocalScale: {x: 0.8993289, y: 0.89932895, z: 0.8993289}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 995280539066518760}
   - {fileID: 8902980121418437371}
   - {fileID: 1216508678455606800}
   - {fileID: 8860812688859658071}
@@ -10460,7 +10558,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0.000000014901161, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.06592471, y: 1.2263418, z: 0.9463487}
+  m_ConnectedAnchor: {x: 0.06592428, y: 1.2263418, z: 0.9463479}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
@@ -10742,7 +10840,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0.000000014901161, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.06592459, y: 1.2263422, z: -0.9689577}
+  m_ConnectedAnchor: {x: 0.06592428, y: 1.2263422, z: -0.9689581}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
@@ -10848,7 +10946,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0.000000014901161, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.020931276, y: 0.19817677, z: -0.5148484}
+  m_ConnectedAnchor: {x: -0.020931408, y: 0.19817688, z: -0.5148483}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
@@ -11498,13 +11596,11 @@ MonoBehaviour:
   muzzleFlash: {fileID: 7868402956079818844}
   bulletPrefab: {fileID: 2089041227659820891, guid: 44d001e11900ecf498e4685e64db80d3, type: 3}
   muzzlePoint: {fileID: 3511913693244371176}
-  bulletLine: {fileID: 8151915597416370346}
   shootableLayer:
     serializedVersion: 2
     m_Bits: 640
   casualAI: {fileID: 1953923593445750220}
   bulletSpeed: 100
-  bulletLineDuration: 0.05
   cooldownTime: 0.3
   bulletMultiplier: 1
   bulletSpread: 0
@@ -11677,7 +11773,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0.000000014901161, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.020931216, y: 0.1981763, z: 0.4960595}
+  m_ConnectedAnchor: {x: -0.020931408, y: 0.1981764, z: 0.49605903}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
