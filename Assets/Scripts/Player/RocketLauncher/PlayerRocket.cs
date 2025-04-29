@@ -19,9 +19,9 @@ public class PlayerRocket : MonoBehaviour
     }
 
     void Update(){
-        if (GetComponent<Rigidbody>().velocity.sqrMagnitude > 0f)
+        if (GetComponent<Rigidbody>().linearVelocity.sqrMagnitude > 0f)
         {
-            Vector3 horizontalVelocity = new Vector3(GetComponent<Rigidbody>().velocity.x, 0, GetComponent<Rigidbody>().velocity.z);
+            Vector3 horizontalVelocity = new Vector3(GetComponent<Rigidbody>().linearVelocity.x, 0, GetComponent<Rigidbody>().linearVelocity.z);
 
             if (horizontalVelocity.sqrMagnitude > 0f)
             {

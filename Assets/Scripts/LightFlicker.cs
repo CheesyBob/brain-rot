@@ -13,6 +13,7 @@ public class LightFlicker : MonoBehaviour
     private List<float> baseIntensities = new List<float>();
     private List<Color> originalColors = new List<Color>();
 
+    [System.Obsolete]
     private void Start()
     {
         Light[] allLights = FindObjectsOfType<Light>();

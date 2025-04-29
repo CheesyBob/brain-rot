@@ -57,7 +57,7 @@ public class CasualPistol : MonoBehaviour
 
                 GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.identity);
                 Rigidbody rb = bullet.GetComponent<Rigidbody>();
-                rb.velocity = spreadDirection * bulletSpeed;
+                rb.linearVelocity = spreadDirection * bulletSpeed;
 
                 bullet.GetComponent<PistolBullet>().damageAmount = bulletDamageAmount;
 

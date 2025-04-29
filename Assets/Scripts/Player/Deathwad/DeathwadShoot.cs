@@ -15,6 +15,7 @@ public class DeathwadShoot : MonoBehaviour
 
     public float spawnForce;
 
+    [System.Obsolete]
     void Start()
     {
         deathwadFireAmount = FindObjectOfType<DeathwadFireAmount>();

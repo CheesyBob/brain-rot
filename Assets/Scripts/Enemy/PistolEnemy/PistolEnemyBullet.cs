@@ -10,8 +10,8 @@ public class PistolEnemyBullet : MonoBehaviour
     {
         Rigidbody rb = GetComponent<Rigidbody>();
 
-        rb.velocity = Vector3.zero;
-        rb.velocity = transform.forward * BulletSpeed;
+        rb.linearVelocity = Vector3.zero;
+        rb.linearVelocity = transform.forward * BulletSpeed;
 
         Destroy(gameObject, 5f);
     }

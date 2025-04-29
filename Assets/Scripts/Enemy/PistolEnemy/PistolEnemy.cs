@@ -37,7 +37,7 @@ public class PistolEnemy : MonoBehaviour
         Vector3 fireDirection = CalculateFireDirection();
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
  
-        rb.velocity = fireDirection * bulletSpeed;
+        rb.linearVelocity = fireDirection * bulletSpeed;
     }
 
     Vector3 CalculateFireDirection()

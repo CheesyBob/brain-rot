@@ -6,6 +6,7 @@ public class PlayerSpawn : MonoBehaviour
 {
     private CharacterController player;
 
+    [System.Obsolete]
     void Awake()
     {
         player = FindObjectOfType<CharacterController>();

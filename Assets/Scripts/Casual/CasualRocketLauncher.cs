@@ -41,7 +41,7 @@ public class CasualRocketLauncher : MonoBehaviour
         Vector3 fireDirection = (target.transform.position - spawnPoint.position).normalized;
 
         GameObject newObject = Instantiate(rocket, spawnPoint.position, Quaternion.LookRotation(fireDirection));
-        newObject.GetComponent<Rigidbody>().velocity = fireDirection * 18f;
+        newObject.GetComponent<Rigidbody>().linearVelocity = fireDirection * 18f;
 
         GetComponent<AudioSource>().Play();
 

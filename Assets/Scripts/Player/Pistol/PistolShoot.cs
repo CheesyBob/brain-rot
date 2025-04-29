@@ -118,7 +118,7 @@ public class PistolShoot : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(new Vector3(spreadDirection.x, 0f, spreadDirection.z));
         rb.MoveRotation(targetRotation);
 
-        rb.velocity = spreadDirection * bulletSpeed;
+        rb.linearVelocity = spreadDirection * bulletSpeed;
     }
 
     private Vector3 GetMouseWorldPosition()

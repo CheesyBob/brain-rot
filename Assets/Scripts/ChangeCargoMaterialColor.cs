@@ -7,6 +7,7 @@ public class ChangeCargoMaterialColor : MonoBehaviour
     [Range(0.0f, 1.0f)]
     private float maxBrightness = 0.4f;
 
+    [System.Obsolete]
     void Start()
     {
         GameObject[] allObjects = FindObjectsOfType<GameObject>();

@@ -17,6 +17,7 @@ public class CutoutObjects : MonoBehaviour
         mainCamera = GetComponent<Camera>();
     }
 
+    [System.Obsolete]
     private void Update()
     {
         Vector2 cutoutPos = mainCamera.WorldToViewportPoint(Player.position);

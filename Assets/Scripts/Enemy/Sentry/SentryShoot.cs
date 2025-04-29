@@ -99,7 +99,7 @@ public class SentryShoot : MonoBehaviour
 
     void SpawnBullet(){
         GameObject bulletInstance = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity);
-        bulletInstance.GetComponent<Rigidbody>().velocity = (player.position - bulletSpawnPoint.position).normalized * bulletSpeed;
+        bulletInstance.GetComponent<Rigidbody>().linearVelocity = (player.position - bulletSpawnPoint.position).normalized * bulletSpeed;
 
         PlayRandomShootSound(sentryShoot);
     }
